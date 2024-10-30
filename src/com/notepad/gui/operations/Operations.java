@@ -1,0 +1,130 @@
+package com.notepad.gui.operations;
+
+import com.notepad.gui.CodeEditor;
+
+import javax.swing.*;
+import javax.swing.undo.UndoManager;
+import java.io.*;
+
+public class Operations {
+
+    // File Operations
+    public void newFile(JFrame frame, JTextArea textArea, File currentFile) {
+        frame.setTitle("Notepad");
+        textArea.setText("");
+        currentFile = null;
+    }
+
+    public void exit(JFrame frame) {
+        frame.dispose();
+    }
+
+    public void newCodeEditor() {
+        SwingUtilities.invokeLater(CodeEditor::new);
+    }
+
+    public void openFile(JFrame frame, JTextArea textArea, JFileChooser fileChooser, File currentFile) {
+        int option = fileChooser.showOpenDialog(frame);
+        if (option != JFileChooser.APPROVE_OPTION) return;
+
+        try {
+            // Get the selected file
+            File selectedFile = fileChooser.getSelectedFile();
+
+            // Update the current file
+            currentFile = selectedFile;
+
+            // Update the title header
+            frame.setTitle(selectedFile.getName());
+
+            // Read the file and store the text
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(selectedFile));
+            StringBuilder fileText = new StringBuilder();
+            String readText;
+
+            while ((readText = bufferedReader.readLine()) != null)
+                fileText.append(readText).append("\n");
+
+            // Update text area GUI
+            textArea.setText(fileText.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveFile(JFrame frame, JTextArea textArea, JFileChooser fileChooser, File currentFile) {
+        // If the current file is null then we have to perform save as functionality
+        if (currentFile == null) saveAs(frame, textArea, fileChooser, currentFile);
+
+        // If the user chooses to cancel saving the file this means that current file will still
+        // be null, then we want to prevent executing the rest of the cod
+        if (currentFile == null) return;
+
+        try {
+            // Write to the current file
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(currentFile));
+            bufferedWriter.write(textArea.getText());
+            bufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // the saveAs method creates a new text file and saves user text
+    public void saveAs(JFrame frame, JTextArea textArea, JFileChooser fileChooser, File currentFile) {
+        int option = fileChooser.showSaveDialog(frame);
+
+        if (option != JFileChooser.APPROVE_OPTION) return;
+
+        try {
+            File selectedFile = fileChooser.getSelectedFile();
+
+            // Need to append .txt to the file if it does not have the txt extension yet
+            String fileName = selectedFile.getName();
+            if (!fileName.substring(fileName.length() - 4).equalsIgnoreCase(".txt"))
+                selectedFile = new File(selectedFile.getAbsoluteFile() + ".txt");
+
+            // Create new file
+            selectedFile.createNewFile();
+
+            // Write the user's text into the file we just created
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(selectedFile));
+            bufferedWriter.write(textArea.getText());
+            bufferedWriter.close();
+
+            // Update the title header of the GUI to the saved text file name
+            frame.setTitle(fileName);
+
+            // Update the current file
+            currentFile = selectedFile;
+
+            // Show display dialog
+            JOptionPane.showMessageDialog(frame, "Saved file " + selectedFile.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Text operations
+    public void cut(JTextArea textArea) {
+        textArea.cut();
+    }
+
+    public void copy(JTextArea textArea) {
+        textArea.copy();
+    }
+
+    public void paste(JTextArea textArea) {
+        textArea.paste();
+    }
+
+    public void undo(UndoManager undoManager) {
+        if (undoManager.canUndo())
+            undoManager.undo();
+    }
+
+    public void redo(UndoManager undoManager) {
+        if (undoManager.canRedo())
+            undoManager.redo();
+    }
+}
