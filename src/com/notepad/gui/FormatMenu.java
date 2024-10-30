@@ -1,0 +1,59 @@
+package com.notepad.gui;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class FormatMenu extends JMenu {
+    private final JTextArea textArea;
+
+    public FormatMenu(JTextArea textArea) {
+        super("Format");
+        this.textArea = textArea;
+        createFormatMenu();
+    }
+
+    private void createFormatMenu() {
+        JCheckBoxMenuItem wordWrapMenuItem = new JCheckBoxMenuItem("Word Wrap");
+        wordWrapMenuItem.addActionListener(_ -> wordWrap(wordWrapMenuItem));
+
+        JMenu alignTextMenu = new JMenu("Align");
+
+        JMenuItem alignTextLeftMenuItem = new JMenuItem("Left");
+        alignTextLeftMenuItem.addActionListener(_ -> alignTextLeft());
+
+        JMenuItem alignTextRightMenuItem = new JMenuItem("Right");
+        alignTextRightMenuItem.addActionListener(_ -> alignTextRight());
+
+        JMenuItem fontMenuItem = new JMenuItem("Font...");
+        fontMenuItem.addActionListener(_ -> fontEditor());
+
+        add(wordWrapMenuItem);
+        alignTextMenu.add(alignTextLeftMenuItem);
+        alignTextMenu.add(alignTextRightMenuItem);
+        add(alignTextMenu);
+        add(fontMenuItem);
+    }
+
+    private void wordWrap(JCheckBoxMenuItem item) {
+        boolean isChecked = item.getState();
+
+        textArea.setLineWrap(isChecked);
+        textArea.setWrapStyleWord(isChecked);
+    }
+
+    private void alignTextLeft() {
+        textArea.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+    }
+
+    private void alignTextRight() {
+        textArea.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+    }
+
+    private void fontEditor() {
+        new FontMenu(this).setVisible(true);
+    }
+
+    public JTextArea getTextArea() {
+        return textArea;
+    }
+}

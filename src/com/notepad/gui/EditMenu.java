@@ -1,0 +1,228 @@
+package com.notepad.gui;
+
+import com.notepad.gui.operations.Operations;
+
+import javax.swing.*;
+import javax.swing.undo.UndoManager;
+import java.awt.*;
+
+public class EditMenu extends JMenu {
+
+    private JTextArea textArea;
+    private JFrame frame;
+    private Operations operations;
+
+    private int lastSearchIndex = 0;
+
+    // Provides support for undo and redo operations
+    private final UndoManager undoManager;
+
+    public EditMenu(JFrame frame, JTextArea textArea) {
+        super("Edit");
+        this.frame = frame;
+        this.textArea = textArea;
+
+        operations = new Operations();
+        undoManager = new UndoManager();
+        textArea.getDocument().addUndoableEditListener(e -> undoManager.addEdit(e.getEdit()));
+        createEditMenu();
+    }
+
+    private void createEditMenu() {
+        JMenuItem cutMenuItem = new JMenuItem("Cut");
+        cutMenuItem.addActionListener(_ -> operations.cut(textArea));
+
+        JMenuItem copyMenuItem = new JMenuItem("Copy");
+        copyMenuItem.addActionListener(_ -> operations.copy(textArea));
+
+        JMenuItem pasteMenuItem = new JMenuItem("Paste");
+        pasteMenuItem.addActionListener(_ -> operations.paste(textArea));
+
+        JMenuItem undoMenuItem = new JMenuItem("Undo");
+        undoMenuItem.addActionListener(_ -> operations.undo(undoManager));
+
+        JMenuItem redoMenuItem = new JMenuItem("Redo");
+        redoMenuItem.addActionListener(_ -> operations.redo(undoManager));
+
+        JMenuItem findMenuItem = new JMenuItem("Find");
+        findMenuItem.addActionListener(_ -> showFindDialog());
+
+        JMenuItem findAndReplaceMenuItem = new JMenuItem("Find & Replace");
+        findAndReplaceMenuItem.addActionListener(_ -> showFindAndReplaceDialog());
+
+        add(cutMenuItem);
+        add(copyMenuItem);
+        add(pasteMenuItem);
+        add(undoMenuItem);
+        add(redoMenuItem);
+        add(findMenuItem);
+        add(findAndReplaceMenuItem);
+    }
+
+    private void showFindDialog() {
+        JDialog findDialog = new JDialog(frame, "Find");
+        findDialog.setLayout(new FlowLayout());
+        findDialog.setResizable(false);
+
+        JLabel findLabel = new JLabel("Find:");
+        JTextField findField = new JTextField(20);
+        JCheckBox caseSensitiveCheckbox = new JCheckBox("Case Sensitive");
+
+        JButton findButton = new JButton("Find Next");
+        findButton.addActionListener(_ -> findText(findField.getText(), caseSensitiveCheckbox.isSelected()));
+
+        findDialog.add(findLabel);
+        findDialog.add(findField);
+        findDialog.add(caseSensitiveCheckbox);
+        findDialog.add(findButton);
+
+        findDialog.setSize(320, 130);
+        findDialog.setVisible(true);
+    }
+
+    private void showFindAndReplaceDialog() {
+        JDialog findReplaceDialog = new JDialog(frame, "Find and Replace", true);
+        findReplaceDialog.setLayout(new GridBagLayout());
+        findReplaceDialog.setResizable(false);
+
+        // Find label
+        findReplaceDialog.add(new JLabel("Find:"), new GridBagConstraints(
+                0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
+                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0
+        ));
+
+        // Find text field
+        JTextField findField = new JTextField(15);
+        findReplaceDialog.add(findField, new GridBagConstraints(
+                1, 0, 3, 1, 1.0, 0.0, GridBagConstraints.NORTHWEST,
+                GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0
+        ));
+
+        // Replace label
+        findReplaceDialog.add(new JLabel("Replace:"), new GridBagConstraints(
+                0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
+                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0
+        ));
+
+        // Replace text field
+        JTextField replaceField = new JTextField(15);
+        findReplaceDialog.add(replaceField, new GridBagConstraints(
+                1, 1, 3, 1, 1.0, 0.0, GridBagConstraints.NORTHWEST,
+                GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0
+        ));
+
+        // Case sensitivity checkbox
+        JCheckBox caseSensitiveCheckbox = new JCheckBox("Case Sensitive");
+        findReplaceDialog.add(caseSensitiveCheckbox, new GridBagConstraints(
+                0, 2, 3, 1, 1.0, 0.0, GridBagConstraints.LINE_START,
+                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0
+        ));
+
+        // Buttons for find, replace, and replace all
+        JButton findButton = new JButton("Find Next");
+        findReplaceDialog.add(findButton, new GridBagConstraints(
+                0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0
+        ));
+
+        JButton replaceButton = new JButton("Replace");
+        findReplaceDialog.add(replaceButton, new GridBagConstraints(
+                1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0
+        ));
+
+        JButton replaceAllButton = new JButton("Replace All");
+        findReplaceDialog.add(replaceAllButton, new GridBagConstraints(
+                2, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0
+        ));
+
+        // Dialog settings
+        findReplaceDialog.pack();
+        findReplaceDialog.setLocationRelativeTo(frame);
+        findReplaceDialog.setVisible(true);
+
+        // Action listeners for buttons
+        findButton.addActionListener(_ -> findText(findField.getText(), caseSensitiveCheckbox.isSelected()));
+        replaceButton.addActionListener(_ -> replaceText(findField.getText(), replaceField.getText(), caseSensitiveCheckbox.isSelected()));
+        replaceAllButton.addActionListener(_ -> replaceAllText(findField.getText(), replaceField.getText(), caseSensitiveCheckbox.isSelected()));
+    }
+
+    private void findText(String text, boolean caseSensitive) {
+        String content = textArea.getText();
+
+        if (!caseSensitive) {
+            content = content.toLowerCase();
+            text = text.toLowerCase();
+        }
+
+        if (text.isEmpty()) {
+            JOptionPane.showMessageDialog(frame, "Please enter text to find.");
+            return;
+        }
+
+        int index = content.indexOf(text, lastSearchIndex);
+        if (index == -1) {
+            lastSearchIndex = 0; // Reset search index
+            JOptionPane.showMessageDialog(frame, "Text not found.");
+        } else {
+            textArea.setCaretPosition(index);
+            textArea.select(index, index + text.length());
+            lastSearchIndex = index + text.length(); // Update search index
+        }
+    }
+
+    private void replaceText(String findText, String replaceText, boolean caseSensitive) {
+        String content = textArea.getText();
+        String searchContent = caseSensitive ? content : content.toLowerCase();
+        String searchText = caseSensitive ? findText : findText.toLowerCase();
+
+        if (searchText.isEmpty()) {
+            JOptionPane.showMessageDialog(frame, "Please enter text to find.");
+            return;
+        }
+
+        int index = searchContent.indexOf(searchText, lastSearchIndex);
+        if (index == -1) {
+            lastSearchIndex = 0; // Reset search index
+            JOptionPane.showMessageDialog(frame, "Text not found.");
+        } else {
+            // Replace the found text
+            textArea.replaceRange(replaceText, index, index + findText.length());
+            lastSearchIndex = index + replaceText.length(); // Update search index for subsequent finds
+            textArea.setCaretPosition(lastSearchIndex);
+        }
+    }
+
+    private void replaceAllText(String findText, String replaceText, boolean caseSensitive) {
+        String content = textArea.getText();
+        String searchContent = caseSensitive ? content : content.toLowerCase();
+        String searchText = caseSensitive ? findText : findText.toLowerCase();
+
+        if (searchText.isEmpty()) {
+            JOptionPane.showMessageDialog(frame, "Please enter text to find.");
+            return;
+        }
+
+        int count = 0;
+        int index = searchContent.indexOf(searchText);
+        while (index != -1) {
+            // Replace the found text
+            textArea.replaceRange(replaceText, index, index + findText.length());
+
+            // Update content for subsequent search
+            content = textArea.getText();
+            searchContent = caseSensitive ? content : content.toLowerCase();
+
+            // Move the search index forward to avoid replacing the same content repeatedly
+            index = searchContent.indexOf(searchText, index + replaceText.length());
+            count++;
+        }
+
+        if (count > 0) {
+            JOptionPane.showMessageDialog(frame, count + " occurrence(s) replaced.");
+        } else {
+            JOptionPane.showMessageDialog(frame, "No occurrences found.");
+        }
+    }
+}
