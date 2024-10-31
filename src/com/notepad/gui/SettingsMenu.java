@@ -8,7 +8,12 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SettingsMenu extends JMenu {
+
+    private static final Logger logger = LoggerFactory.getLogger(CodeEditor.class);
 
     private JFrame frame;
 
@@ -49,7 +54,7 @@ public class SettingsMenu extends JMenu {
             UIManager.setLookAndFeel(new FlatLightLaf());
             SwingUtilities.updateComponentTreeUI(frame);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Couldn't set light mode: {}", e.getMessage(), e);
         }
     }
 
@@ -58,7 +63,7 @@ public class SettingsMenu extends JMenu {
             UIManager.setLookAndFeel(new FlatDarkLaf());
             SwingUtilities.updateComponentTreeUI(frame);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Couldn't set dark mode: {}", e.getMessage(), e);
         }
     }
 
@@ -67,7 +72,7 @@ public class SettingsMenu extends JMenu {
             UIManager.setLookAndFeel(new FlatDarculaLaf());
             SwingUtilities.updateComponentTreeUI(frame);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Couldn't set darcula mode: {}", e.getMessage(), e);
         }
     }
 
@@ -76,7 +81,7 @@ public class SettingsMenu extends JMenu {
             UIManager.setLookAndFeel(new FlatMacLightLaf());
             SwingUtilities.updateComponentTreeUI(frame);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Couldn't set mac light mode: {}", e.getMessage(), e);
         }
     }
 
@@ -85,7 +90,7 @@ public class SettingsMenu extends JMenu {
             UIManager.setLookAndFeel(new FlatMacDarkLaf());
             SwingUtilities.updateComponentTreeUI(frame);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Couldn't set mac dark mode: {}", e.getMessage(), e);
         }
     }
 }

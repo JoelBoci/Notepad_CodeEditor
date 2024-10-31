@@ -18,7 +18,12 @@ import java.util.Map;
 
 import com.notepad.gui.operations.Operations;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class CodeEditor {
+
+    private static final Logger logger = LoggerFactory.getLogger(CodeEditor.class);
 
     private JFrame frame;
     private RSyntaxTextArea codeArea;
@@ -225,7 +230,7 @@ public class CodeEditor {
             else
                 JOptionPane.showMessageDialog(frame, "Compilation failed.");
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error while compiling code.", e);
             JOptionPane.showMessageDialog(frame, "Error during compilation: " + e.getMessage());
         }
     }
@@ -251,7 +256,7 @@ public class CodeEditor {
                 JOptionPane.showMessageDialog(frame, !output.isEmpty() ? output.toString() : "No output", "Program Output", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error while running code.", e);
             JOptionPane.showMessageDialog(frame, "Error running the program: " + e.getMessage());
         }
     }
@@ -291,7 +296,7 @@ public class CodeEditor {
                 System.err.println("Theme file not found: " + themeFile);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error while trying to find theme.", e);
         }
     }
 

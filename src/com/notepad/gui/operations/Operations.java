@@ -6,7 +6,12 @@ import javax.swing.*;
 import javax.swing.undo.UndoManager;
 import java.io.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Operations {
+
+    private static final Logger logger = LoggerFactory.getLogger(CodeEditor.class);
 
     // File Operations
     public void newFile(JFrame frame, JTextArea textArea, File currentFile) {
@@ -48,7 +53,7 @@ public class Operations {
             // Update text area GUI
             textArea.setText(fileText.toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error opening file: {}", e.getMessage(), e);
         }
     }
 
@@ -66,7 +71,7 @@ public class Operations {
             bufferedWriter.write(textArea.getText());
             bufferedWriter.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error saving file: {}", e.getMessage(), e);
         }
     }
 
@@ -101,7 +106,7 @@ public class Operations {
             // Show display dialog
             JOptionPane.showMessageDialog(frame, "Saved file " + selectedFile.getName());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error saving file as: {}", e.getMessage(), e);
         }
     }
 

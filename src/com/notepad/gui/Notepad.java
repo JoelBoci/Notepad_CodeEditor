@@ -1,12 +1,17 @@
 package com.notepad.gui;
 
-import com.formdev.flatlaf.FlatLightLaf;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 
+import com.formdev.flatlaf.FlatLightLaf;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Notepad {
+
+    private static final Logger logger = LoggerFactory.getLogger(CodeEditor.class);
 
     private JFrame frame;
     private JTextArea textArea;
@@ -66,7 +71,8 @@ public class Notepad {
         try {
             UIManager.setLookAndFeel(new FlatLightLaf());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Couldn't set default mode: {}", e.getMessage(), e);
+
         }
     }
 }
