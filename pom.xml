@@ -24,7 +24,7 @@
         <dependency>
             <groupId>com.github.javaparser</groupId>
             <artifactId>javaparser-core</artifactId>
-            <version>3.23.1</version> <!-- Check for the latest version -->
+            <version>3.23.1</version>
         </dependency>
         <!-- Error Logging -->
         <dependency>
@@ -41,7 +41,6 @@
 
     <build>
         <plugins>
-            <!-- Add Maven plugins here if needed -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
