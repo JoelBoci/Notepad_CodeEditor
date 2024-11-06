@@ -70,8 +70,6 @@ public class CodeEditor {
 
         undoManager = new UndoManager();
         codeArea.getDocument().addUndoableEditListener(e -> undoManager.addEdit(e.getEdit()));
-
-        applyEditorTheme("dark.xml");
     }
 
     private void showLanguageSelectionDialog() {
@@ -225,10 +223,13 @@ public class CodeEditor {
 
             int result = compiler.run(null, null, null, "-d", "bin", sourceFile.getPath());
 
-            if (result == 0)
+            if (result == 0) {
                 JOptionPane.showMessageDialog(frame, "Compilation successful.");
-            else
+                logger.info("Code compiled successfully");
+            } else {
                 JOptionPane.showMessageDialog(frame, "Compilation failed.");
+                logger.error("Error while compiling code");
+            }
         } catch (IOException e) {
             logger.error("Error while compiling code.", e);
             JOptionPane.showMessageDialog(frame, "Error during compilation: " + e.getMessage());

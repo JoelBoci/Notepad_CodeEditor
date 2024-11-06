@@ -137,15 +137,13 @@ public class EditMenu extends JMenu {
                 GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0
         ));
 
-        // Dialog settings
-        findReplaceDialog.pack();
-        findReplaceDialog.setLocationRelativeTo(frame);
-        findReplaceDialog.setVisible(true);
-
-        // Action listeners for buttons
         findButton.addActionListener(_ -> findText(findField.getText(), caseSensitiveCheckbox.isSelected()));
         replaceButton.addActionListener(_ -> replaceText(findField.getText(), replaceField.getText(), caseSensitiveCheckbox.isSelected()));
         replaceAllButton.addActionListener(_ -> replaceAllText(findField.getText(), replaceField.getText(), caseSensitiveCheckbox.isSelected()));
+
+        findReplaceDialog.pack();
+        findReplaceDialog.setLocationRelativeTo(frame);
+        findReplaceDialog.setVisible(true);
     }
 
     private void findText(String text, boolean caseSensitive) {
@@ -189,8 +187,9 @@ public class EditMenu extends JMenu {
         } else {
             // Replace the found text
             textArea.replaceRange(replaceText, index, index + findText.length());
-            lastSearchIndex = index + replaceText.length(); // Update search index for subsequent finds
+            lastSearchIndex = index + replaceText.length();
             textArea.setCaretPosition(lastSearchIndex);
+            textArea.select(lastSearchIndex - replaceText.length(), lastSearchIndex);
         }
     }
 
@@ -219,10 +218,9 @@ public class EditMenu extends JMenu {
             count++;
         }
 
-        if (count > 0) {
+        if (count > 0)
             JOptionPane.showMessageDialog(frame, count + " occurrence(s) replaced.");
-        } else {
+        else
             JOptionPane.showMessageDialog(frame, "No occurrences found.");
-        }
     }
 }

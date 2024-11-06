@@ -8,6 +8,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class FontMenu extends JDialog {
+
+    Color selectedBlue = new Color(80, 106, 136);
+    Color boneWhite = new Color(245, 245, 245);
+
     // Will need a reference to our GUI to make changes to the GUI from this class
     private FormatMenu source;
 
@@ -130,8 +134,8 @@ public class FontMenu extends JDialog {
                 public void mouseEntered(MouseEvent e) {
                     // Add highlights over font name when the mouse hovers over them
                     fontNameLabel.setOpaque(true);
-                    fontNameLabel.setBackground(Color.BLUE);
-                    fontNameLabel.setForeground(Color.WHITE);
+                    fontNameLabel.setBackground(selectedBlue);
+                    fontNameLabel.setForeground(boneWhite);
                 }
 
                 @Override
@@ -196,8 +200,8 @@ public class FontMenu extends JDialog {
             public void mouseEntered(MouseEvent e) {
                 // Add blue highlight when hovering
                 plainStyle.setOpaque(true);
-                plainStyle.setBackground(Color.BLUE);
-                plainStyle.setForeground(Color.WHITE);
+                plainStyle.setBackground(selectedBlue);
+                plainStyle.setForeground(boneWhite);
             }
 
             @Override
@@ -224,8 +228,8 @@ public class FontMenu extends JDialog {
             public void mouseEntered(MouseEvent e) {
                 // Add blue highlight when hovering
                 boldStyle.setOpaque(true);
-                boldStyle.setBackground(Color.BLUE);
-                boldStyle.setForeground(Color.WHITE);
+                boldStyle.setBackground(selectedBlue);
+                boldStyle.setForeground(boneWhite);
             }
 
             @Override
@@ -252,8 +256,8 @@ public class FontMenu extends JDialog {
             public void mouseEntered(MouseEvent e) {
                 // Add blue highlight when hovering
                 italicStyle.setOpaque(true);
-                italicStyle.setBackground(Color.BLUE);
-                italicStyle.setForeground(Color.WHITE);
+                italicStyle.setBackground(selectedBlue);
+                italicStyle.setForeground(boneWhite);
             }
 
             @Override
@@ -280,8 +284,8 @@ public class FontMenu extends JDialog {
             public void mouseEntered(MouseEvent e) {
                 // Add blue highlight when hovering
                 boldItalicStyle.setOpaque(true);
-                boldItalicStyle.setBackground(Color.BLUE);
-                boldItalicStyle.setForeground(Color.WHITE);
+                boldItalicStyle.setBackground(selectedBlue);
+                boldItalicStyle.setForeground(boneWhite);
             }
 
             @Override
@@ -336,8 +340,8 @@ public class FontMenu extends JDialog {
                 public void mouseEntered(MouseEvent e) {
                     // Add blue highlights
                     fontSizeValueLabel.setOpaque(true);
-                    fontSizeValueLabel.setBackground(Color.BLUE);
-                    fontSizeValueLabel.setForeground(Color.WHITE);
+                    fontSizeValueLabel.setBackground(selectedBlue);
+                    fontSizeValueLabel.setForeground(boneWhite);
                 }
 
                 @Override

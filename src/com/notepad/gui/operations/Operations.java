@@ -6,6 +6,7 @@ import javax.swing.*;
 import javax.swing.undo.UndoManager;
 import java.io.*;
 
+import com.notepad.gui.Notepad;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,9 +16,24 @@ public class Operations {
 
     // File Operations
     public void newFile(JFrame frame, JTextArea textArea, File currentFile) {
-        frame.setTitle("Notepad");
-        textArea.setText("");
-        currentFile = null;
+        String[] options = {"New Window", "This Window", "Cancel"};
+        String message = "Where would you like to open the new note?";
+        String title = "Select One:";
+
+        var option = JOptionPane.showOptionDialog(frame, message, title,
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, options, options[0]
+        );
+
+        switch (option) {
+            case 0 -> SwingUtilities.invokeLater(Notepad::new);
+            case 1 -> {
+                frame.setTitle("Notepad");
+                textArea.setText("");
+                currentFile = null;
+            }
+            default -> logger.info("New file operation cancelled by user.");
+        }
     }
 
     public void exit(JFrame frame) {
