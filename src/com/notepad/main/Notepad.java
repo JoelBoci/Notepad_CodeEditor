@@ -1,4 +1,4 @@
-package com.notepad.gui;
+package com.notepad.main;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import com.formdev.flatlaf.FlatLightLaf;
 
+import com.notepad.gui.*;
+import com.notepad.gui.menuItems.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +49,7 @@ public class Notepad {
         FormatMenu formatMenu = new FormatMenu(textArea);
         ViewMenu viewMenu = new ViewMenu(textArea);
         SettingsMenu settingsMenu = new SettingsMenu(frame);
+        ShortcutMenu shortcutMenu = new ShortcutMenu();
 
         // Add menus to the menu bar
         menuBar.add(fileMenu);
@@ -54,6 +57,7 @@ public class Notepad {
         menuBar.add(formatMenu);
         menuBar.add(viewMenu);
         menuBar.add(settingsMenu);
+        menuBar.add(shortcutMenu);
 
         // Set the menu bar on the frame
         frame.setJMenuBar(menuBar);

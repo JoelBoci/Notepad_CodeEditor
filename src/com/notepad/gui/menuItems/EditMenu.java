@@ -1,10 +1,11 @@
-package com.notepad.gui;
+package com.notepad.gui.menuItems;
 
-import com.notepad.gui.operations.Operations;
+import com.notepad.operations.Operations;
 
 import javax.swing.*;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class EditMenu extends JMenu {
 
@@ -31,24 +32,31 @@ public class EditMenu extends JMenu {
     private void createEditMenu() {
         JMenuItem cutMenuItem = new JMenuItem("Cut");
         cutMenuItem.addActionListener(_ -> operations.cut(textArea));
+        cutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK));
 
         JMenuItem copyMenuItem = new JMenuItem("Copy");
         copyMenuItem.addActionListener(_ -> operations.copy(textArea));
+        copyMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
 
         JMenuItem pasteMenuItem = new JMenuItem("Paste");
         pasteMenuItem.addActionListener(_ -> operations.paste(textArea));
+        pasteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK));
 
         JMenuItem undoMenuItem = new JMenuItem("Undo");
         undoMenuItem.addActionListener(_ -> operations.undo(undoManager));
+        undoMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK));
 
         JMenuItem redoMenuItem = new JMenuItem("Redo");
         redoMenuItem.addActionListener(_ -> operations.redo(undoManager));
+        redoMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK));
 
         JMenuItem findMenuItem = new JMenuItem("Find");
         findMenuItem.addActionListener(_ -> showFindDialog());
+        findMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK));
 
         JMenuItem findAndReplaceMenuItem = new JMenuItem("Find & Replace");
         findAndReplaceMenuItem.addActionListener(_ -> showFindAndReplaceDialog());
+        findAndReplaceMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, KeyEvent.CTRL_DOWN_MASK));
 
         add(cutMenuItem);
         add(copyMenuItem);

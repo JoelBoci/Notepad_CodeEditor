@@ -1,4 +1,4 @@
-package com.notepad.gui;
+package com.notepad.main;
 
 import javax.swing.SwingUtilities;
 

@@ -1,4 +1,4 @@
-package com.notepad.gui;
+package com.notepad.gui.menuItems;
 
 import javax.swing.*;
 
@@ -8,6 +8,7 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
+import com.notepad.gui.CodeEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package com.notepad.gui;
+package com.notepad.gui.menuItems;
 
 import javax.swing.*;
 import java.awt.*;

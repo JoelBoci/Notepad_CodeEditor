@@ -1,7 +1,8 @@
-package com.notepad.gui;
+package com.notepad.gui.menuItems;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class ViewMenu extends JMenu {
 
@@ -16,9 +17,11 @@ public class ViewMenu extends JMenu {
     private void createViewMenu() {
         JMenuItem zoomInMenuItem = new JMenuItem("Zoom In");
         zoomInMenuItem.addActionListener(_ -> zoomIn());
+        zoomInMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, KeyEvent.CTRL_DOWN_MASK));
 
         JMenuItem zoomOutMenuItem = new JMenuItem("Zoom Out");
         zoomOutMenuItem.addActionListener(_ -> zoomOut());
+        zoomOutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
 
         JMenuItem restoreDefaultZoomMenuItem = new JMenuItem("Restore Default Zoom");
         restoreDefaultZoomMenuItem.addActionListener(_ -> defaultZoom());

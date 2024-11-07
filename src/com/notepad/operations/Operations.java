@@ -1,4 +1,4 @@
-package com.notepad.gui.operations;
+package com.notepad.operations;
 
 import com.notepad.gui.CodeEditor;
 
@@ -6,7 +6,7 @@ import javax.swing.*;
 import javax.swing.undo.UndoManager;
 import java.io.*;
 
-import com.notepad.gui.Notepad;
+import com.notepad.main.Notepad;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

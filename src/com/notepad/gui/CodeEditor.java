@@ -2,6 +2,7 @@ package com.notepad.gui;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.notepad.operations.Operations;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Theme;
@@ -15,8 +16,6 @@ import javax.tools.ToolProvider;
 import java.awt.*;
 import java.io.*;
 import java.util.Map;
-
-import com.notepad.gui.operations.Operations;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
