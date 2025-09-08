@@ -1,7 +1,12 @@
 package com.notepad.gui.menuItems;
 
-import javax.swing.*;
-import java.awt.*;
+
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JTextArea;
+
+import java.awt.ComponentOrientation;
 
 public class FormatMenu extends JMenu {
     private final JTextArea textArea;

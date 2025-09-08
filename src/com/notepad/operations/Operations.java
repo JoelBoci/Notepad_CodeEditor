@@ -2,13 +2,24 @@ package com.notepad.operations;
 
 import com.notepad.gui.CodeEditor;
 
-import javax.swing.*;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.undo.UndoManager;
-import java.io.*;
 
 import com.notepad.main.Notepad;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Operations {
 
@@ -20,7 +31,7 @@ public class Operations {
         String message = "Where would you like to open the new note?";
         String title = "Select One:";
 
-        var option = JOptionPane.showOptionDialog(frame, message, title,
+        int option = JOptionPane.showOptionDialog(frame, message, title,
                 JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
                 null, options, options[0]
         );

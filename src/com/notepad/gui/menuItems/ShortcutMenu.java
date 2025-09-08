@@ -2,7 +2,9 @@ package com.notepad.gui.menuItems;
 
 import com.notepad.gui.shortcuts.Shortcuts;
 
-import javax.swing.*;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+
 
 public class ShortcutMenu extends JMenu {
 

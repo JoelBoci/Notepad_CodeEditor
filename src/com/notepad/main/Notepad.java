@@ -1,13 +1,26 @@
 package com.notepad.main;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.UIManager;
+
+import java.awt.Font;
+import java.awt.Image;
 import java.util.Objects;
 
 import com.formdev.flatlaf.FlatLightLaf;
 
-import com.notepad.gui.*;
-import com.notepad.gui.menuItems.*;
+import com.notepad.gui.CodeEditor;
+import com.notepad.gui.menuItems.EditMenu;
+import com.notepad.gui.menuItems.FileMenu;
+import com.notepad.gui.menuItems.FormatMenu;
+import com.notepad.gui.menuItems.SettingsMenu;
+import com.notepad.gui.menuItems.ShortcutMenu;
+import com.notepad.gui.menuItems.ViewMenu;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

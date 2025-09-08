@@ -3,18 +3,38 @@ package com.notepad.gui;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.notepad.operations.Operations;
+
+import net.miginfocom.swing.MigLayout;
+
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.undo.UndoManager;
+
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
-import java.awt.*;
-import java.io.*;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -72,13 +92,14 @@ public class CodeEditor {
     }
 
     private void showLanguageSelectionDialog() {
-        JDialog languageDialog = new JDialog(frame, "Select Programming Language", true);
-        languageDialog.setLayout(new GridBagLayout());
-        languageDialog.setSize(new Dimension(280, 125));
+        JDialog languageDialog = new JDialog(frame, "Select Language", true);
+        languageDialog.setLayout(new MigLayout());
         languageDialog.setResizable(false);
 
+        JLabel languageLabel = new JLabel("Language:");
+
         JComboBox<String> languageDropdown = new JComboBox<>(LANGUAGE_SYNTAX_MAP.keySet().toArray(new String[0]));
-        languageDropdown.setSelectedItem("Java");
+        languageDropdown.setSelectedItem(0);
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(_ -> {
@@ -95,15 +116,12 @@ public class CodeEditor {
             frame.dispose();
         });
 
-        languageDialog.add(languageDropdown, new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+        languageDialog.add(languageLabel, "left, split 2");
+        languageDialog.add(languageDropdown, "growx, pushx, wrap");
+        languageDialog.add(okButton, "split 2");
+        languageDialog.add(cancelButton);
 
-        languageDialog.add(okButton, new GridBagConstraints(0, 1, 1, 1, 0.5, 0.0,
-                GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-
-        languageDialog.add(cancelButton, new GridBagConstraints(1, 1, 1, 1, 0.5, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-
+        languageDialog.pack();
         languageDialog.setVisible(true);
     }
 

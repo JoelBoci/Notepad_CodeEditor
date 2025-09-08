@@ -1,9 +1,19 @@
 package com.notepad.gui.menuItems;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import net.miginfocom.swing.MigLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -25,32 +35,34 @@ public class FontMenu extends JDialog {
         this.source = source;
         setTitle("Font Settings");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(500, 350);
+        setSize(650, 350);
         setLocationRelativeTo(source); // Launch menu at center of notepad GUI
         setResizable(false);
         setModal(true);
 
-        // Remove layout to give us more control on the placement of our components
-        setLayout(null);
+        setLayout(new MigLayout("insets 10, fillx",
+                "[grow,fill][pref!][pref!]",
+                "[][grow][]"));
 
         addFontMenuComponents();
     }
 
     private void addFontMenuComponents() {
+        JPanel buttonPanel = new JPanel(new MigLayout());
         JButton applyButton = new JButton("Apply");
-        applyButton.setBounds(280, 275, 90, 25);
         applyButton.addActionListener(_ -> apply());
 
         JButton cancelButton = new JButton("Cancel");
-        cancelButton.setBounds(385, 275, 90, 25);
         cancelButton.addActionListener(_ -> cancel());
 
-        add(applyButton);
-        add(cancelButton);
+        buttonPanel.add(applyButton);
+        buttonPanel.add(cancelButton);
+
         addFontChooser();
         addFontStyleChooser();
         addFontSizeChooser();
         addFontColorChooser();
+        add(buttonPanel);
     }
 
     private void apply() {
@@ -89,31 +101,24 @@ public class FontMenu extends JDialog {
     }
 
     private void addFontChooser() {
-        JLabel fontLabel = new JLabel("Font:");
-        fontLabel.setBounds(10, 5, 125, 15);
-        add(fontLabel);
-
         // Font panel will display the current font and the list of fonts available to choose from
-        JPanel fontPanel = new JPanel();
-        fontPanel.setBounds(10, 20, 205, 160);
+        JPanel fontPanel = new JPanel(new MigLayout("insets 0, fillx, wrap 1"));
+
+        JLabel fontLabel = new JLabel("Font:");
+        add(fontLabel, "cell 0 0");
 
         // Display the current font
         currentFontField = new JTextField(source.getTextArea().getFont().getFontName());
-        currentFontField.setPreferredSize(new Dimension(205, 25));
         currentFontField.setEditable(false);
-        fontPanel.add(currentFontField);
+        fontPanel.add(currentFontField, "growx");
 
         // Display the list of available fonts
-        JPanel listOfFontsPanel = new JPanel();
-
-        // Change the layout to only have one column to display each font properly
-        listOfFontsPanel.setLayout(new BoxLayout(listOfFontsPanel, BoxLayout.Y_AXIS));
+        JPanel listOfFontsPanel = new JPanel(new MigLayout("insets 0, wrap 1", "[grow, fill]"));
 
         // Change the background colour to white
         listOfFontsPanel.setBackground(Color.WHITE);
 
         JScrollPane scrollPane = new JScrollPane(listOfFontsPanel);
-        scrollPane.setPreferredSize(new Dimension(205, 125));
 
         // Retrieve all the possible fonts
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -150,19 +155,16 @@ public class FontMenu extends JDialog {
             listOfFontsPanel.add(fontNameLabel);
         }
 
-        fontPanel.add(scrollPane);
-
-        add(fontPanel);
+        fontPanel.add(scrollPane, "grow, pushy");
+        add(fontPanel, "cell 0 1, grow");
     }
 
     private void addFontStyleChooser() {
-        JLabel fontStyleLabel = new JLabel("Font Style:");
-        fontStyleLabel.setBounds(220, 5, 125, 15);
-        add(fontStyleLabel);
-
         // Will display the current font style and all available font styles
-        JPanel fontStylePanel = new JPanel();
-        fontStylePanel.setBounds(220, 20, 125, 160);
+        JPanel fontStylePanel = new JPanel(new MigLayout("insets 0, fillx, wrap 1"));
+
+        JLabel fontStyleLabel = new JLabel("Font Style:");
+        add(fontStyleLabel, "cell 1 0");
 
         // Get the current font style
         int currentFontStyle = source.getTextArea().getFont().getStyle();
@@ -174,15 +176,11 @@ public class FontMenu extends JDialog {
         };
 
         currentFontStyleField = new JTextField(currentFontStyleText);
-        currentFontStyleField.setPreferredSize(new Dimension(125, 25));
         currentFontStyleField.setEditable(false);
-        fontStylePanel.add(currentFontStyleField);
+        fontStylePanel.add(currentFontStyleField, "growx");
 
         // Display the list of all font styles available
-        JPanel listOfFontStylesPanel = new JPanel();
-
-        // Make the layout have only one column (similar to the font names)
-        listOfFontStylesPanel.setLayout(new BoxLayout(listOfFontStylesPanel, BoxLayout.Y_AXIS));
+        JPanel listOfFontStylesPanel = new JPanel(new MigLayout("insets 0, wrap 1", "[grow, fill]"));
         listOfFontStylesPanel.setBackground(Color.WHITE);
 
         // List of font styles:
@@ -299,31 +297,25 @@ public class FontMenu extends JDialog {
         listOfFontStylesPanel.add(boldItalicStyle);
 
         JScrollPane scrollPane = new JScrollPane(listOfFontStylesPanel);
-        scrollPane.setPreferredSize(new Dimension(125, 125));
-        fontStylePanel.add(scrollPane);
-
-        add(fontStylePanel);
+        fontStylePanel.add(scrollPane, "grow, pushy");
+        add(fontStylePanel, "cell 1 1, growy, w 100!");
     }
 
     private void addFontSizeChooser() {
-        JLabel fontSizeLabel = new JLabel("Font Size: ");
-        fontSizeLabel.setBounds(350, 5, 125, 15);
-        add(fontSizeLabel);
-
         // Display the current font size and list of font sizes to choose from
-        JPanel fontSizePanel = new JPanel();
-        fontSizePanel.setBounds(350, 20, 125, 160);
+        JPanel fontSizePanel = new JPanel(new MigLayout("insets 0, fillx, wrap 1"));
+
+        JLabel fontSizeLabel = new JLabel("Font Size: ");
+        add(fontSizeLabel, "cell 2 0");
 
         currentFontSizeField = new JTextField(
                 Integer.toString(source.getTextArea().getFont().getSize())
         );
-        currentFontSizeField.setPreferredSize(new Dimension(125, 25));
         currentFontSizeField.setEditable(false);
-        fontSizePanel.add(currentFontSizeField);
+        fontSizePanel.add(currentFontSizeField, "growx");
 
         // Create list of font sizes to choose from
-        JPanel listOfFontSizesPanel = new JPanel();
-        listOfFontSizesPanel.setLayout(new BoxLayout(listOfFontSizesPanel, BoxLayout.Y_AXIS));
+        JPanel listOfFontSizesPanel = new JPanel(new MigLayout("insets 0, wrap 1", "[grow, fill]"));
         listOfFontSizesPanel.setBackground(Color.WHITE);
 
         // List of available font sizes will be from 8 -> 72 with increments of 2
@@ -356,32 +348,25 @@ public class FontMenu extends JDialog {
         }
 
         JScrollPane scrollPane = new JScrollPane(listOfFontSizesPanel);
-        scrollPane.setPreferredSize(new Dimension(125, 125));
-        fontSizePanel.add(scrollPane);
-
-        add(fontSizePanel);
+        fontSizePanel.add(scrollPane, "grow, pushy");
+        add(fontSizePanel, "cell 2 1, growy, w 90!");
     }
 
     private void addFontColorChooser() {
         // Display the current colour of the text
         currentColourBox = new JPanel();
-        currentColourBox.setBounds(175, 200, 23, 23);
         currentColourBox.setBackground(source.getTextArea().getForeground());
         currentColourBox.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        add(currentColourBox);
+        add(currentColourBox, "cell 0 2, split 2");
 
         JButton chooseColourButton = new JButton("Choose Colour");
-        chooseColourButton.setBounds(10, 200, 150, 25);
-        chooseColourButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Color c = JColorChooser.showDialog(FontMenu.this, "Select a colour", Color.BLACK);
+        chooseColourButton.addActionListener(_ -> {
+            Color c = JColorChooser.showDialog(FontMenu.this, "Select a colour", Color.BLACK);
 
-                // Update the color to the selected colour
-                currentColourBox.setBackground(c);
-            }
+            // Update the color to the selected colour
+            currentColourBox.setBackground(c);
         });
 
-        add(chooseColourButton);
+        add(chooseColourButton, "gapleft 8, wrap");
     }
 }

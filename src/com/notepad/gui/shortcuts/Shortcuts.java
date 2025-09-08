@@ -1,5 +1,7 @@
 package com.notepad.gui.shortcuts;
 
+import net.miginfocom.swing.MigLayout;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -40,10 +42,10 @@ public class Shortcuts {
             // Create the dialog to display the shortcuts table
             JDialog dialog = new JDialog();
             dialog.setTitle("Keyboard Shortcuts");
+            dialog.setLayout(new MigLayout());
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             dialog.setResizable(false);
-            dialog.setLayout(new BorderLayout());
-            dialog.add(scrollPane, BorderLayout.CENTER);
+            dialog.add(scrollPane);
             dialog.pack();
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
