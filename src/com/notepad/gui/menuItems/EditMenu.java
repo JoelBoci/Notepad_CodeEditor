@@ -1,10 +1,21 @@
 package com.notepad.gui.menuItems;
 
 import com.notepad.operations.Operations;
+import net.miginfocom.swing.MigLayout;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.undo.UndoManager;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class EditMenu extends JMenu {
@@ -69,7 +80,7 @@ public class EditMenu extends JMenu {
 
     private void showFindDialog() {
         JDialog findDialog = new JDialog(frame, "Find");
-        findDialog.setLayout(new FlowLayout());
+        findDialog.setLayout(new MigLayout());
         findDialog.setResizable(false);
 
         JLabel findLabel = new JLabel("Find:");
@@ -79,76 +90,57 @@ public class EditMenu extends JMenu {
         JButton findButton = new JButton("Find Next");
         findButton.addActionListener(_ -> findText(findField.getText(), caseSensitiveCheckbox.isSelected()));
 
-        findDialog.add(findLabel);
-        findDialog.add(findField);
-        findDialog.add(caseSensitiveCheckbox);
+        findDialog.add(findLabel, "left, split 2");
+        findDialog.add(findField, "pushx, growx, wrap");
+        findDialog.add(caseSensitiveCheckbox, "split 2");
         findDialog.add(findButton);
 
-        findDialog.setSize(320, 130);
+        findDialog.pack();
         findDialog.setVisible(true);
     }
 
     private void showFindAndReplaceDialog() {
         JDialog findReplaceDialog = new JDialog(frame, "Find and Replace", true);
-        findReplaceDialog.setLayout(new GridBagLayout());
+        findReplaceDialog.setLayout(new MigLayout());
         findReplaceDialog.setResizable(false);
 
         // Find label
-        findReplaceDialog.add(new JLabel("Find:"), new GridBagConstraints(
-                0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
-                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0
-        ));
+        JLabel findLabel = new JLabel("Find:");
+        findReplaceDialog.add(findLabel, "left, split 2, sg 1");
 
         // Find text field
         JTextField findField = new JTextField(15);
-        findReplaceDialog.add(findField, new GridBagConstraints(
-                1, 0, 3, 1, 1.0, 0.0, GridBagConstraints.NORTHWEST,
-                GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0
-        ));
+        findReplaceDialog.add(findField, "pushx, growx, wrap");
 
         // Replace label
-        findReplaceDialog.add(new JLabel("Replace:"), new GridBagConstraints(
-                0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
-                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0
-        ));
+        JLabel replaceLabel = new JLabel("Replace:");
+        findReplaceDialog.add(replaceLabel, "left, split 2, sg 1");
 
         // Replace text field
         JTextField replaceField = new JTextField(15);
-        findReplaceDialog.add(replaceField, new GridBagConstraints(
-                1, 1, 3, 1, 1.0, 0.0, GridBagConstraints.NORTHWEST,
-                GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0
-        ));
+        findReplaceDialog.add(replaceField, "pushx, growx, wrap");
 
         // Case sensitivity checkbox
         JCheckBox caseSensitiveCheckbox = new JCheckBox("Case Sensitive");
-        findReplaceDialog.add(caseSensitiveCheckbox, new GridBagConstraints(
-                0, 2, 3, 1, 1.0, 0.0, GridBagConstraints.LINE_START,
-                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0
-        ));
+        findReplaceDialog.add(caseSensitiveCheckbox, "wrap");
+
+        JPanel buttonPanel = new JPanel(new MigLayout());
 
         // Buttons for find, replace, and replace all
         JButton findButton = new JButton("Find Next");
-        findReplaceDialog.add(findButton, new GridBagConstraints(
-                0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0
-        ));
+        buttonPanel.add(findButton);
 
         JButton replaceButton = new JButton("Replace");
-        findReplaceDialog.add(replaceButton, new GridBagConstraints(
-                1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0
-        ));
+        buttonPanel.add(replaceButton);
 
         JButton replaceAllButton = new JButton("Replace All");
-        findReplaceDialog.add(replaceAllButton, new GridBagConstraints(
-                2, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-                GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0
-        ));
+        buttonPanel.add(replaceAllButton);
 
         findButton.addActionListener(_ -> findText(findField.getText(), caseSensitiveCheckbox.isSelected()));
         replaceButton.addActionListener(_ -> replaceText(findField.getText(), replaceField.getText(), caseSensitiveCheckbox.isSelected()));
         replaceAllButton.addActionListener(_ -> replaceAllText(findField.getText(), replaceField.getText(), caseSensitiveCheckbox.isSelected()));
 
+        findReplaceDialog.add(buttonPanel);
         findReplaceDialog.pack();
         findReplaceDialog.setLocationRelativeTo(frame);
         findReplaceDialog.setVisible(true);

@@ -1,9 +1,18 @@
 package com.notepad.gui.menuItems;
 
-import javax.swing.*;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
 import java.awt.event.KeyEvent;
-import java.io.*;
+
+import java.io.File;
+
 import com.notepad.operations.Operations;
 
 public class FileMenu extends JMenu {

@@ -1,7 +1,11 @@
 package com.notepad.gui.menuItems;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
+
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 
 public class ViewMenu extends JMenu {
