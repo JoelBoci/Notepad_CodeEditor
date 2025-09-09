@@ -108,6 +108,7 @@ public class CodeEditor {
             frame.setTitle("Code Editor (" + selectedLanguage + ")");
             languageDialog.dispose();
             frame.setVisible(true);
+            logger.info("Selected language -> '{}'", selectedLanguage);
         });
 
         JButton cancelButton = new JButton("Cancel");
@@ -201,18 +202,21 @@ public class CodeEditor {
         menuBar.add(runMenu);
         menuBar.add(formatMenu);
 
+        logger.info("Code editor menu bar created");
         return menuBar;
     }
 
     // Method to compile the code
     private void compileCode() {
         try {
+            logger.info("Attempting code compilation...");
             String code = codeArea.getText();
             String packageName = extractPackageName(code);
             String className = extractClassName(code);
 
             if (className == null || packageName == null) {
                 JOptionPane.showMessageDialog(frame, "No class or package found in the code.");
+                logger.info("No class or package found in the code");
                 return;
             }
 
@@ -220,21 +224,26 @@ public class CodeEditor {
             this.packageName = packageName; // Store package name
 
             // Create directories based on the package name
+            logger.info("Creating directories based on package name '{}'", packageName);
             File sourceDir = new File("src/" + packageName.replace('.', '/'));
             sourceDir.mkdirs(); // Ensure the directory structure exists
 
             // Create the file in the correct directory
             File sourceFile = new File(sourceDir, className + ".java");
+            logger.info("Created file '{}'", sourceFile);
 
             // Write code to the file
+            logger.info("Writing code to file '{}'", sourceFile);
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(sourceFile))) {
                 writer.write(code);
             }
 
             // Compile the source file
+            logger.info("Compiling the source file");
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
             if (compiler == null) {
                 JOptionPane.showMessageDialog(frame, "No Java compiler found. Please make sure you are using a JDK, not a JRE.");
+                logger.warn("No Java compiler found. Please make sure you are using a JDK, not a JRE.");
                 return;
             }
 
@@ -255,6 +264,7 @@ public class CodeEditor {
 
     private void runCode(String packageName, String className) {
         try {
+            logger.info("Attempting to run code...");
             String fullClassName = packageName.isEmpty() ? className : packageName + "." + className;
 
             // Run the compiled class file from the `bin` directory
@@ -263,6 +273,7 @@ public class CodeEditor {
 
             // Start the process
             Process process = processBuilder.start();
+            logger.info("Starting process...");
 
             // Capture and display the output
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
@@ -271,8 +282,10 @@ public class CodeEditor {
                 while ((line = reader.readLine()) != null)
                     output.append(line).append("\n");
 
-                JOptionPane.showMessageDialog(frame, !output.isEmpty() ? output.toString() : "No output", "Program Output", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(frame, !output.isEmpty() ? output.toString()
+                        : "No output", "Program Output", JOptionPane.INFORMATION_MESSAGE);
             }
+            logger.info("Code successfully run...");
         } catch (IOException e) {
             logger.error("Error while running code.", e);
             JOptionPane.showMessageDialog(frame, "Error running the program: " + e.getMessage());
@@ -283,8 +296,9 @@ public class CodeEditor {
         String[] lines = code.split("\n");
         for (String line : lines) {
             line = line.trim();
-            if (line.startsWith("package "))
+            if (line.startsWith("package ")) {
                 return line.substring("package ".length(), line.length() - 1).trim();
+            }
         }
         return ""; // No package name found
     }
@@ -311,7 +325,7 @@ public class CodeEditor {
                 Theme theme = Theme.load(themeStream);
                 theme.apply(codeArea);
             } else {
-                System.err.println("Theme file not found: " + themeFile);
+                logger.error("Theme file not found: {}", themeFile);
             }
         } catch (Exception e) {
             logger.error("Error while trying to find theme.", e);
