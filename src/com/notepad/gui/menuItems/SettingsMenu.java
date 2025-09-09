@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 public class SettingsMenu extends JMenu {
 
-    private static final Logger logger = LoggerFactory.getLogger(CodeEditor.class);
+    private static final Logger logger = LoggerFactory.getLogger(SettingsMenu.class);
 
     private JFrame frame;
 

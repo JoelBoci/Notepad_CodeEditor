@@ -23,7 +23,7 @@ import java.io.IOException;
 
 public class Operations {
 
-    private static final Logger logger = LoggerFactory.getLogger(CodeEditor.class);
+    private static final Logger logger = LoggerFactory.getLogger(Operations.class);
 
     // File Operations
     public void newFile(JFrame frame, JTextArea textArea, File currentFile) {
@@ -37,22 +37,28 @@ public class Operations {
         );
 
         switch (option) {
-            case 0 -> SwingUtilities.invokeLater(Notepad::new);
+            case 0 -> {
+                SwingUtilities.invokeLater(Notepad::new);
+                logger.info("New file created in new window");
+            }
             case 1 -> {
                 frame.setTitle("Notepad");
                 textArea.setText("");
                 currentFile = null;
+                logger.info("New file created in current window");
             }
             default -> logger.info("New file operation cancelled by user.");
         }
     }
 
     public void exit(JFrame frame) {
+        logger.info("Quiting notepad...");
         frame.dispose();
     }
 
     public void newCodeEditor() {
         SwingUtilities.invokeLater(CodeEditor::new);
+        logger.info("New code editor created");
     }
 
     public void openFile(JFrame frame, JTextArea textArea, JFileChooser fileChooser, File currentFile) {
@@ -62,6 +68,8 @@ public class Operations {
         try {
             // Get the selected file
             File selectedFile = fileChooser.getSelectedFile();
+
+            logger.info("Attempting to open file '{}'", selectedFile);
 
             // Update the current file
             currentFile = selectedFile;
@@ -79,6 +87,7 @@ public class Operations {
 
             // Update text area GUI
             textArea.setText(fileText.toString());
+            logger.info("Opened file: '{}'", selectedFile);
         } catch (IOException e) {
             logger.error("Error opening file: {}", e.getMessage(), e);
         }
@@ -94,9 +103,11 @@ public class Operations {
 
         try {
             // Write to the current file
+            logger.info("Attempting to save file...");
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(currentFile));
             bufferedWriter.write(textArea.getText());
             bufferedWriter.close();
+            logger.info("File successfully saved :)");
         } catch (IOException e) {
             logger.error("Error saving file: {}", e.getMessage(), e);
         }
@@ -113,6 +124,7 @@ public class Operations {
 
             // Need to append .txt to the file if it does not have the txt extension yet
             String fileName = selectedFile.getName();
+            logger.info("Attempting to save file '{}'", fileName);
             if (!fileName.substring(fileName.length() - 4).equalsIgnoreCase(".txt"))
                 selectedFile = new File(selectedFile.getAbsoluteFile() + ".txt");
 
@@ -131,7 +143,8 @@ public class Operations {
             currentFile = selectedFile;
 
             // Show display dialog
-            JOptionPane.showMessageDialog(frame, "Saved file " + selectedFile.getName());
+            JOptionPane.showMessageDialog(frame, "Saved file " + fileName);
+            logger.info("'{}' has been saved :)", fileName);
         } catch (Exception e) {
             logger.error("Error saving file as: {}", e.getMessage(), e);
         }

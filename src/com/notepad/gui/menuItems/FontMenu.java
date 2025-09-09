@@ -17,6 +17,9 @@ import java.awt.GraphicsEnvironment;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class FontMenu extends JDialog {
 
     Color selectedBlue = new Color(80, 106, 136);
@@ -30,6 +33,8 @@ public class FontMenu extends JDialog {
     private JTextField currentFontSizeField;
 
     private JPanel currentColourBox;
+
+    private static final Logger logger = LoggerFactory.getLogger(FontMenu.class);
 
     public FontMenu(FormatMenu source) {
         this.source = source;
@@ -92,11 +97,16 @@ public class FontMenu extends JDialog {
         // Update text area font color
         source.getTextArea().setForeground(fontColor);
 
+        logger.info(
+          "New Font Set: Font = '{}', Style = '{}', Size = '{}'", fontType, currentFontStyleField.getText(), fontSize
+        );
+
         // Dispose menu
         FontMenu.this.dispose();
     }
 
     private void cancel() {
+        logger.info("Cancelling font setting operation");
         FontMenu.this.dispose();
     }
 

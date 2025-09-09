@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 public class Notepad {
 
-    private static final Logger logger = LoggerFactory.getLogger(CodeEditor.class);
+    private static final Logger logger = LoggerFactory.getLogger(Notepad.class);
 
     private JFrame frame;
     private JTextArea textArea;
@@ -54,6 +54,8 @@ public class Notepad {
     }
 
     private void createMenuBar() {
+        logger.info("Creating menu bar...");
+
         JMenuBar menuBar = new JMenuBar();
 
         // Create menus
@@ -77,6 +79,7 @@ public class Notepad {
     }
 
     private void setGlobalFont(Font font) {
+        logger.info("Setting global fonts...");
         UIManager.getLookAndFeelDefaults().keys().asIterator().forEachRemaining(key -> {
             if (UIManager.get(key) instanceof Font) {
                 UIManager.put(key, font);
@@ -86,10 +89,10 @@ public class Notepad {
 
     private void setDefaultMode() {
         try {
+            logger.info("Setting default look and feel...");
             UIManager.setLookAndFeel(new FlatLightLaf());
         } catch (Exception e) {
             logger.error("Couldn't set default mode: {}", e.getMessage(), e);
-
         }
     }
 }
