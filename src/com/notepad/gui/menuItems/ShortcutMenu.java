@@ -8,18 +8,18 @@ import javax.swing.JMenuItem;
 
 public class ShortcutMenu extends JMenu {
 
-    private Shortcuts shortcuts;
+    private final Shortcuts mShortcuts;
 
     public ShortcutMenu() {
         super("Shortcuts");
 
-        shortcuts = new Shortcuts();
+        mShortcuts = new Shortcuts();
         createShortcutMenu();
     }
 
     public void createShortcutMenu() {
         JMenuItem shortcutMenuItem = new JMenuItem("Keyboard Shortcuts");
-        shortcutMenuItem.addActionListener(shortcuts.showKeyboardShortcuts());
+        shortcutMenuItem.addActionListener(mShortcuts.showKeyboardShortcuts());
 
         add(shortcutMenuItem);
     }

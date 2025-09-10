@@ -7,11 +7,11 @@ import javax.swing.JTextArea;
 import java.awt.ComponentOrientation;
 
 public class FormatMenu extends JMenu {
-    private final JTextArea textArea;
+    private final JTextArea mTextArea;
 
     public FormatMenu(JTextArea textArea) {
         super("Format");
-        this.textArea = textArea;
+        this.mTextArea = textArea;
         createFormatMenu();
     }
 
@@ -34,18 +34,18 @@ public class FormatMenu extends JMenu {
     }
 
     private void alignTextLeft() {
-        textArea.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+        mTextArea.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
     }
 
     private void alignTextRight() {
-        textArea.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        mTextArea.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
     }
 
     private void fontEditor() {
         new FontMenu(this).setVisible(true);
     }
 
-    public JTextArea getTextArea() {
-        return textArea;
+    public JTextArea getmTextArea() {
+        return mTextArea;
     }
 }

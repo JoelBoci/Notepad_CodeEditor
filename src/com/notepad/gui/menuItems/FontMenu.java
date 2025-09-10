@@ -22,26 +22,26 @@ import org.slf4j.LoggerFactory;
 
 public class FontMenu extends JDialog {
 
-    Color selectedBlue = new Color(80, 106, 136);
-    Color boneWhite = new Color(245, 245, 245);
+    Color mSelectedBlue = new Color(80, 106, 136);
+    Color mBoneWhite = new Color(245, 245, 245);
 
     // Will need a reference to our GUI to make changes to the GUI from this class
-    private FormatMenu source;
+    private final FormatMenu mSource;
 
-    private JTextField currentFontField;
-    private JTextField currentFontStyleField;
-    private JTextField currentFontSizeField;
+    private JTextField mCurrentFontField;
+    private JTextField mCurrentFontStyleField;
+    private JTextField mCurrentFontSizeField;
 
-    private JPanel currentColourBox;
+    private JPanel mCurrentColourBox;
 
-    private static final Logger logger = LoggerFactory.getLogger(FontMenu.class);
+    private static final Logger mLogger = LoggerFactory.getLogger(FontMenu.class);
 
-    public FontMenu(FormatMenu source) {
-        this.source = source;
+    public FontMenu(FormatMenu mSource) {
+        this.mSource = mSource;
         setTitle("Font Settings");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(650, 350);
-        setLocationRelativeTo(source); // Launch menu at center of notepad GUI
+        setLocationRelativeTo(mSource); // Launch menu at center of notepad GUI
         setResizable(false);
         setModal(true);
 
@@ -72,10 +72,10 @@ public class FontMenu extends JDialog {
 
     private void apply() {
         // Get current font type
-        String fontType = currentFontField.getText();
+        String fontType = mCurrentFontField.getText();
 
         // Get font style
-        int fontStyle = switch (currentFontStyleField.getText()) {
+        int fontStyle = switch (mCurrentFontStyleField.getText()) {
             case "Plain" -> Font.PLAIN;
             case "Bold" -> Font.BOLD;
             case "Italic" -> Font.ITALIC;
@@ -83,22 +83,22 @@ public class FontMenu extends JDialog {
         };
 
         // Get font size
-        int fontSize = Integer.parseInt(currentFontSizeField.getText());
+        int fontSize = Integer.parseInt(mCurrentFontSizeField.getText());
 
         // Get font colour
-        Color fontColor = currentColourBox.getBackground();
+        Color fontColor = mCurrentColourBox.getBackground();
 
         // Create font
         Font newFont = new Font(fontType, fontStyle, fontSize);
 
         // Update text area font
-        source.getTextArea().setFont(newFont);
+        mSource.getmTextArea().setFont(newFont);
 
         // Update text area font color
-        source.getTextArea().setForeground(fontColor);
+        mSource.getmTextArea().setForeground(fontColor);
 
-        logger.info(
-          "New Font Set: Font = '{}', Style = '{}', Size = '{}'", fontType, currentFontStyleField.getText(), fontSize
+        mLogger.info(
+          "New Font Set: Font = '{}', Style = '{}', Size = '{}'", fontType, mCurrentFontStyleField.getText(), fontSize
         );
 
         // Dispose menu
@@ -106,7 +106,7 @@ public class FontMenu extends JDialog {
     }
 
     private void cancel() {
-        logger.info("Cancelling font setting operation");
+        mLogger.info("Cancelling font setting operation");
         FontMenu.this.dispose();
     }
 
@@ -118,9 +118,9 @@ public class FontMenu extends JDialog {
         add(fontLabel, "cell 0 0");
 
         // Display the current font
-        currentFontField = new JTextField(source.getTextArea().getFont().getFontName());
-        currentFontField.setEditable(false);
-        fontPanel.add(currentFontField, "growx");
+        mCurrentFontField = new JTextField(mSource.getmTextArea().getFont().getFontName());
+        mCurrentFontField.setEditable(false);
+        fontPanel.add(mCurrentFontField, "growx");
 
         // Display the list of available fonts
         JPanel listOfFontsPanel = new JPanel(new MigLayout("insets 0, wrap 1", "[grow, fill]"));
@@ -141,16 +141,16 @@ public class FontMenu extends JDialog {
             fontNameLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    // When clicked, set the currentFontField to the font name
-                    currentFontField.setText(font);
+                    // When clicked, set the mCurrentFontField to the font name
+                    mCurrentFontField.setText(font);
                 }
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
                     // Add highlights over font name when the mouse hovers over them
                     fontNameLabel.setOpaque(true);
-                    fontNameLabel.setBackground(selectedBlue);
-                    fontNameLabel.setForeground(boneWhite);
+                    fontNameLabel.setBackground(mSelectedBlue);
+                    fontNameLabel.setForeground(mBoneWhite);
                 }
 
                 @Override
@@ -177,7 +177,7 @@ public class FontMenu extends JDialog {
         add(fontStyleLabel, "cell 1 0");
 
         // Get the current font style
-        int currentFontStyle = source.getTextArea().getFont().getStyle();
+        int currentFontStyle = mSource.getmTextArea().getFont().getStyle();
         String currentFontStyleText = switch (currentFontStyle) {
             case Font.PLAIN -> "Plain";
             case Font.BOLD -> "Bold";
@@ -185,9 +185,9 @@ public class FontMenu extends JDialog {
             default -> "Bold Italic";
         };
 
-        currentFontStyleField = new JTextField(currentFontStyleText);
-        currentFontStyleField.setEditable(false);
-        fontStylePanel.add(currentFontStyleField, "growx");
+        mCurrentFontStyleField = new JTextField(currentFontStyleText);
+        mCurrentFontStyleField.setEditable(false);
+        fontStylePanel.add(mCurrentFontStyleField, "growx");
 
         // Display the list of all font styles available
         JPanel listOfFontStylesPanel = new JPanel(new MigLayout("insets 0, wrap 1", "[grow, fill]"));
@@ -201,15 +201,15 @@ public class FontMenu extends JDialog {
             @Override
             public void mouseClicked(MouseEvent e) {
                 // Update the current style field
-                currentFontStyleField.setText(plainStyle.getText());
+                mCurrentFontStyleField.setText(plainStyle.getText());
             }
 
             @Override
             public void mouseEntered(MouseEvent e) {
                 // Add blue highlight when hovering
                 plainStyle.setOpaque(true);
-                plainStyle.setBackground(selectedBlue);
-                plainStyle.setForeground(boneWhite);
+                plainStyle.setBackground(mSelectedBlue);
+                plainStyle.setForeground(mBoneWhite);
             }
 
             @Override
@@ -229,15 +229,15 @@ public class FontMenu extends JDialog {
             @Override
             public void mouseClicked(MouseEvent e) {
                 // Update the current style field
-                currentFontStyleField.setText(boldStyle.getText());
+                mCurrentFontStyleField.setText(boldStyle.getText());
             }
 
             @Override
             public void mouseEntered(MouseEvent e) {
                 // Add blue highlight when hovering
                 boldStyle.setOpaque(true);
-                boldStyle.setBackground(selectedBlue);
-                boldStyle.setForeground(boneWhite);
+                boldStyle.setBackground(mSelectedBlue);
+                boldStyle.setForeground(mBoneWhite);
             }
 
             @Override
@@ -257,15 +257,15 @@ public class FontMenu extends JDialog {
             @Override
             public void mouseClicked(MouseEvent e) {
                 // Update the current style field
-                currentFontStyleField.setText(italicStyle.getText());
+                mCurrentFontStyleField.setText(italicStyle.getText());
             }
 
             @Override
             public void mouseEntered(MouseEvent e) {
                 // Add blue highlight when hovering
                 italicStyle.setOpaque(true);
-                italicStyle.setBackground(selectedBlue);
-                italicStyle.setForeground(boneWhite);
+                italicStyle.setBackground(mSelectedBlue);
+                italicStyle.setForeground(mBoneWhite);
             }
 
             @Override
@@ -285,15 +285,15 @@ public class FontMenu extends JDialog {
             @Override
             public void mouseClicked(MouseEvent e) {
                 // Update the current style field
-                currentFontStyleField.setText(boldItalicStyle.getText());
+                mCurrentFontStyleField.setText(boldItalicStyle.getText());
             }
 
             @Override
             public void mouseEntered(MouseEvent e) {
                 // Add blue highlight when hovering
                 boldItalicStyle.setOpaque(true);
-                boldItalicStyle.setBackground(selectedBlue);
-                boldItalicStyle.setForeground(boneWhite);
+                boldItalicStyle.setBackground(mSelectedBlue);
+                boldItalicStyle.setForeground(mBoneWhite);
             }
 
             @Override
@@ -318,11 +318,11 @@ public class FontMenu extends JDialog {
         JLabel fontSizeLabel = new JLabel("Font Size: ");
         add(fontSizeLabel, "cell 2 0");
 
-        currentFontSizeField = new JTextField(
-                Integer.toString(source.getTextArea().getFont().getSize())
+        mCurrentFontSizeField = new JTextField(
+                Integer.toString(mSource.getmTextArea().getFont().getSize())
         );
-        currentFontSizeField.setEditable(false);
-        fontSizePanel.add(currentFontSizeField, "growx");
+        mCurrentFontSizeField.setEditable(false);
+        fontSizePanel.add(mCurrentFontSizeField, "growx");
 
         // Create list of font sizes to choose from
         JPanel listOfFontSizesPanel = new JPanel(new MigLayout("insets 0, wrap 1", "[grow, fill]"));
@@ -335,15 +335,15 @@ public class FontMenu extends JDialog {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     // Update current font size field
-                    currentFontSizeField.setText(fontSizeValueLabel.getText());
+                    mCurrentFontSizeField.setText(fontSizeValueLabel.getText());
                 }
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
                     // Add blue highlights
                     fontSizeValueLabel.setOpaque(true);
-                    fontSizeValueLabel.setBackground(selectedBlue);
-                    fontSizeValueLabel.setForeground(boneWhite);
+                    fontSizeValueLabel.setBackground(mSelectedBlue);
+                    fontSizeValueLabel.setForeground(mBoneWhite);
                 }
 
                 @Override
@@ -364,17 +364,17 @@ public class FontMenu extends JDialog {
 
     private void addFontColorChooser() {
         // Display the current colour of the text
-        currentColourBox = new JPanel();
-        currentColourBox.setBackground(source.getTextArea().getForeground());
-        currentColourBox.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        add(currentColourBox, "cell 0 2, split 2");
+        mCurrentColourBox = new JPanel();
+        mCurrentColourBox.setBackground(mSource.getmTextArea().getForeground());
+        mCurrentColourBox.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        add(mCurrentColourBox, "cell 0 2, split 2");
 
         JButton chooseColourButton = new JButton("Choose Colour");
         chooseColourButton.addActionListener(_ -> {
             Color c = JColorChooser.showDialog(FontMenu.this, "Select a colour", Color.BLACK);
 
             // Update the color to the selected colour
-            currentColourBox.setBackground(c);
+            mCurrentColourBox.setBackground(c);
         });
 
         add(chooseColourButton, "gapleft 8, wrap");
