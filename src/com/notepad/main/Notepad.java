@@ -26,13 +26,13 @@ import org.slf4j.LoggerFactory;
 
 public class Notepad {
 
-    private static final Logger logger = LoggerFactory.getLogger(Notepad.class);
+    private static final Logger mLogger = LoggerFactory.getLogger(Notepad.class);
 
-    private final JFrame frame;
-    private final JTextArea textArea;
-    private final StatusBar statusBar;
+    private final JFrame mFrame;
+    private final JTextArea mTextArea;
+    private final StatusBar mStatusBar;
 
-    private int zoomPercent = 100;
+    private int mZoomPercent = 100;
 
     public Notepad() {
         setDefaultMode();
@@ -42,43 +42,43 @@ public class Notepad {
         ImageIcon imageIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/notepad.png")));
         Image image = imageIcon.getImage();
 
-        frame = new JFrame("Notepad");
-        frame.setLayout(new MigLayout(
+        mFrame = new JFrame("Notepad");
+        mFrame.setLayout(new MigLayout(
                 "insets 0, fill", "[grow]", "[grow][]"));
 
-        textArea = new JTextArea();
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
+        mTextArea = new JTextArea();
+        mTextArea.setLineWrap(true);
+        mTextArea.setWrapStyleWord(true);
 
-        JScrollPane scrollPane = new JScrollPane(textArea);
+        JScrollPane scrollPane = new JScrollPane(mTextArea);
 
-        statusBar = new StatusBar();
-        statusBar.bindToEditor(textArea);
-        statusBar.setZoomPercent(zoomPercent);
-        statusBar.setEncodingDisplay("UTF-8");
-        statusBar.setEolDisplay("LF");
+        mStatusBar = new StatusBar();
+        mStatusBar.bindToEditor(mTextArea);
+        mStatusBar.setZoomPercent(mZoomPercent);
+        mStatusBar.setEncodingDisplay("UTF-8");
+        mStatusBar.setEolDisplay("LF");
 
         createMenuBar();
 
-        frame.add(scrollPane, "cell 0 0, grow, push");
-        frame.add(statusBar,  "cell 0 1, growx");
-        frame.setSize(800, 600);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setIconImage(image);
-        frame.setVisible(true);
+        mFrame.add(scrollPane, "cell 0 0, grow, push");
+        mFrame.add(mStatusBar,  "cell 0 1, growx");
+        mFrame.setSize(800, 600);
+        mFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        mFrame.setIconImage(image);
+        mFrame.setVisible(true);
     }
 
     private void createMenuBar() {
-        logger.info("Creating menu bar...");
+        mLogger.info("Creating menu bar...");
 
         JMenuBar menuBar = new JMenuBar();
 
         // Create menus
-        FileMenu fileMenu = new FileMenu(frame, textArea);
-        EditMenu editMenu = new EditMenu(frame, textArea);
-        FormatMenu formatMenu = new FormatMenu(textArea);
-        ViewMenu viewMenu = new ViewMenu(textArea, this::onZoomChanged);
-        SettingsMenu settingsMenu = new SettingsMenu(frame);
+        FileMenu fileMenu = new FileMenu(mFrame, mTextArea);
+        EditMenu editMenu = new EditMenu(mFrame, mTextArea);
+        FormatMenu formatMenu = new FormatMenu(mTextArea);
+        ViewMenu viewMenu = new ViewMenu(mTextArea, this::onZoomChanged);
+        SettingsMenu settingsMenu = new SettingsMenu(mFrame);
         ShortcutMenu shortcutMenu = new ShortcutMenu();
 
         // Add menus to the menu bar
@@ -90,16 +90,16 @@ public class Notepad {
         menuBar.add(shortcutMenu);
 
         // Set the menu bar on the frame
-        frame.setJMenuBar(menuBar);
+        mFrame.setJMenuBar(menuBar);
     }
 
     private void onZoomChanged(int newZoomPercent) {
-        this.zoomPercent = newZoomPercent;
-        statusBar.setZoomPercent(newZoomPercent);
+        this.mZoomPercent = newZoomPercent;
+        mStatusBar.setZoomPercent(newZoomPercent);
     }
 
     private void setGlobalFont(Font font) {
-        logger.info("Setting global fonts...");
+        mLogger.info("Setting global fonts...");
         UIManager.getLookAndFeelDefaults().keys().asIterator().forEachRemaining(key -> {
             if (UIManager.get(key) instanceof Font) {
                 UIManager.put(key, font);
@@ -109,10 +109,10 @@ public class Notepad {
 
     private void setDefaultMode() {
         try {
-            logger.info("Setting default look and feel...");
+            mLogger.info("Setting default look and feel...");
             UIManager.setLookAndFeel(new FlatLightLaf());
         } catch (Exception e) {
-            logger.error("Couldn't set default mode: {}", e.getMessage(), e);
+            mLogger.error("Couldn't set default mode: {}", e.getMessage(), e);
         }
     }
 }

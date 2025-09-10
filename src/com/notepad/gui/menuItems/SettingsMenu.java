@@ -12,19 +12,18 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
-import com.notepad.gui.CodeEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SettingsMenu extends JMenu {
 
-    private static final Logger logger = LoggerFactory.getLogger(SettingsMenu.class);
+    private static final Logger mLogger = LoggerFactory.getLogger(SettingsMenu.class);
 
-    private JFrame frame;
+    private final JFrame mFrame;
 
     public SettingsMenu(JFrame frame) {
         super("Settings");
-        this.frame = frame;
+        this.mFrame = frame;
         addSettingsMenu();
     }
 
@@ -57,45 +56,45 @@ public class SettingsMenu extends JMenu {
     private void setLightMode() {
         try {
             UIManager.setLookAndFeel(new FlatLightLaf());
-            SwingUtilities.updateComponentTreeUI(frame);
+            SwingUtilities.updateComponentTreeUI(mFrame);
         } catch (Exception e) {
-            logger.error("Couldn't set light mode: {}", e.getMessage(), e);
+            mLogger.error("Couldn't set light mode: {}", e.getMessage(), e);
         }
     }
 
     private void setDarkMode() {
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
-            SwingUtilities.updateComponentTreeUI(frame);
+            SwingUtilities.updateComponentTreeUI(mFrame);
         } catch (Exception e) {
-            logger.error("Couldn't set dark mode: {}", e.getMessage(), e);
+            mLogger.error("Couldn't set dark mode: {}", e.getMessage(), e);
         }
     }
 
     private void setDarculaMode() {
         try {
             UIManager.setLookAndFeel(new FlatDarculaLaf());
-            SwingUtilities.updateComponentTreeUI(frame);
+            SwingUtilities.updateComponentTreeUI(mFrame);
         } catch (Exception e) {
-            logger.error("Couldn't set darcula mode: {}", e.getMessage(), e);
+            mLogger.error("Couldn't set darcula mode: {}", e.getMessage(), e);
         }
     }
 
     private void setMacLightMode() {
         try {
             UIManager.setLookAndFeel(new FlatMacLightLaf());
-            SwingUtilities.updateComponentTreeUI(frame);
+            SwingUtilities.updateComponentTreeUI(mFrame);
         } catch (Exception e) {
-            logger.error("Couldn't set mac light mode: {}", e.getMessage(), e);
+            mLogger.error("Couldn't set mac light mode: {}", e.getMessage(), e);
         }
     }
 
     private void setMacDarkMode() {
         try {
             UIManager.setLookAndFeel(new FlatMacDarkLaf());
-            SwingUtilities.updateComponentTreeUI(frame);
+            SwingUtilities.updateComponentTreeUI(mFrame);
         } catch (Exception e) {
-            logger.error("Couldn't set mac dark mode: {}", e.getMessage(), e);
+            mLogger.error("Couldn't set mac dark mode: {}", e.getMessage(), e);
         }
     }
 }

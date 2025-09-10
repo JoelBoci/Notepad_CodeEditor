@@ -20,45 +20,45 @@ import java.awt.event.KeyEvent;
 
 public class EditMenu extends JMenu {
 
-    private JTextArea textArea;
-    private JFrame frame;
-    private Operations operations;
+    private final JTextArea mTextArea;
+    private final JFrame mFrame;
+    private final Operations mOperations;
 
-    private int lastSearchIndex = 0;
+    private int mLastSearchIndex = 0;
 
     // Provides support for undo and redo operations
-    private final UndoManager undoManager;
+    private final UndoManager mUndoManager;
 
     public EditMenu(JFrame frame, JTextArea textArea) {
         super("Edit");
-        this.frame = frame;
-        this.textArea = textArea;
+        this.mFrame = frame;
+        this.mTextArea = textArea;
 
-        operations = new Operations();
-        undoManager = new UndoManager();
-        textArea.getDocument().addUndoableEditListener(e -> undoManager.addEdit(e.getEdit()));
+        mOperations = new Operations();
+        mUndoManager = new UndoManager();
+        textArea.getDocument().addUndoableEditListener(e -> mUndoManager.addEdit(e.getEdit()));
         createEditMenu();
     }
 
     private void createEditMenu() {
         JMenuItem cutMenuItem = new JMenuItem("Cut");
-        cutMenuItem.addActionListener(_ -> operations.cut(textArea));
+        cutMenuItem.addActionListener(_ -> mOperations.cut(mTextArea));
         cutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK));
 
         JMenuItem copyMenuItem = new JMenuItem("Copy");
-        copyMenuItem.addActionListener(_ -> operations.copy(textArea));
+        copyMenuItem.addActionListener(_ -> mOperations.copy(mTextArea));
         copyMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
 
         JMenuItem pasteMenuItem = new JMenuItem("Paste");
-        pasteMenuItem.addActionListener(_ -> operations.paste(textArea));
+        pasteMenuItem.addActionListener(_ -> mOperations.paste(mTextArea));
         pasteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK));
 
         JMenuItem undoMenuItem = new JMenuItem("Undo");
-        undoMenuItem.addActionListener(_ -> operations.undo(undoManager));
+        undoMenuItem.addActionListener(_ -> mOperations.undo(mUndoManager));
         undoMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK));
 
         JMenuItem redoMenuItem = new JMenuItem("Redo");
-        redoMenuItem.addActionListener(_ -> operations.redo(undoManager));
+        redoMenuItem.addActionListener(_ -> mOperations.redo(mUndoManager));
         redoMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK));
 
         JMenuItem findMenuItem = new JMenuItem("Find");
@@ -79,7 +79,7 @@ public class EditMenu extends JMenu {
     }
 
     private void showFindDialog() {
-        JDialog findDialog = new JDialog(frame, "Find");
+        JDialog findDialog = new JDialog(mFrame, "Find");
         findDialog.setLayout(new MigLayout());
         findDialog.setResizable(false);
 
@@ -100,7 +100,7 @@ public class EditMenu extends JMenu {
     }
 
     private void showFindAndReplaceDialog() {
-        JDialog findReplaceDialog = new JDialog(frame, "Find and Replace", true);
+        JDialog findReplaceDialog = new JDialog(mFrame, "Find and Replace", true);
         findReplaceDialog.setLayout(new MigLayout());
         findReplaceDialog.setResizable(false);
 
@@ -142,12 +142,12 @@ public class EditMenu extends JMenu {
 
         findReplaceDialog.add(buttonPanel);
         findReplaceDialog.pack();
-        findReplaceDialog.setLocationRelativeTo(frame);
+        findReplaceDialog.setLocationRelativeTo(mFrame);
         findReplaceDialog.setVisible(true);
     }
 
     private void findText(String text, boolean caseSensitive) {
-        String content = textArea.getText();
+        String content = mTextArea.getText();
 
         if (!caseSensitive) {
             content = content.toLowerCase();
@@ -155,51 +155,51 @@ public class EditMenu extends JMenu {
         }
 
         if (text.isEmpty()) {
-            JOptionPane.showMessageDialog(frame, "Please enter text to find.");
+            JOptionPane.showMessageDialog(mFrame, "Please enter text to find.");
             return;
         }
 
-        int index = content.indexOf(text, lastSearchIndex);
+        int index = content.indexOf(text, mLastSearchIndex);
         if (index == -1) {
-            lastSearchIndex = 0; // Reset search index
-            JOptionPane.showMessageDialog(frame, "Text not found.");
+            mLastSearchIndex = 0; // Reset search index
+            JOptionPane.showMessageDialog(mFrame, "Text not found.");
         } else {
-            textArea.setCaretPosition(index);
-            textArea.select(index, index + text.length());
-            lastSearchIndex = index + text.length(); // Update search index
+            mTextArea.setCaretPosition(index);
+            mTextArea.select(index, index + text.length());
+            mLastSearchIndex = index + text.length(); // Update search index
         }
     }
 
     private void replaceText(String findText, String replaceText, boolean caseSensitive) {
-        String content = textArea.getText();
+        String content = mTextArea.getText();
         String searchContent = caseSensitive ? content : content.toLowerCase();
         String searchText = caseSensitive ? findText : findText.toLowerCase();
 
         if (searchText.isEmpty()) {
-            JOptionPane.showMessageDialog(frame, "Please enter text to find.");
+            JOptionPane.showMessageDialog(mFrame, "Please enter text to find.");
             return;
         }
 
-        int index = searchContent.indexOf(searchText, lastSearchIndex);
+        int index = searchContent.indexOf(searchText, mLastSearchIndex);
         if (index == -1) {
-            lastSearchIndex = 0; // Reset search index
-            JOptionPane.showMessageDialog(frame, "Text not found.");
+            mLastSearchIndex = 0; // Reset search index
+            JOptionPane.showMessageDialog(mFrame, "Text not found.");
         } else {
             // Replace the found text
-            textArea.replaceRange(replaceText, index, index + findText.length());
-            lastSearchIndex = index + replaceText.length();
-            textArea.setCaretPosition(lastSearchIndex);
-            textArea.select(lastSearchIndex - replaceText.length(), lastSearchIndex);
+            mTextArea.replaceRange(replaceText, index, index + findText.length());
+            mLastSearchIndex = index + replaceText.length();
+            mTextArea.setCaretPosition(mLastSearchIndex);
+            mTextArea.select(mLastSearchIndex - replaceText.length(), mLastSearchIndex);
         }
     }
 
     private void replaceAllText(String findText, String replaceText, boolean caseSensitive) {
-        String content = textArea.getText();
+        String content = mTextArea.getText();
         String searchContent = caseSensitive ? content : content.toLowerCase();
         String searchText = caseSensitive ? findText : findText.toLowerCase();
 
         if (searchText.isEmpty()) {
-            JOptionPane.showMessageDialog(frame, "Please enter text to find.");
+            JOptionPane.showMessageDialog(mFrame, "Please enter text to find.");
             return;
         }
 
@@ -207,10 +207,10 @@ public class EditMenu extends JMenu {
         int index = searchContent.indexOf(searchText);
         while (index != -1) {
             // Replace the found text
-            textArea.replaceRange(replaceText, index, index + findText.length());
+            mTextArea.replaceRange(replaceText, index, index + findText.length());
 
             // Update content for subsequent search
-            content = textArea.getText();
+            content = mTextArea.getText();
             searchContent = caseSensitive ? content : content.toLowerCase();
 
             // Move the search index forward to avoid replacing the same content repeatedly
@@ -219,8 +219,8 @@ public class EditMenu extends JMenu {
         }
 
         if (count > 0)
-            JOptionPane.showMessageDialog(frame, count + " occurrence(s) replaced.");
+            JOptionPane.showMessageDialog(mFrame, count + " occurrence(s) replaced.");
         else
-            JOptionPane.showMessageDialog(frame, "No occurrences found.");
+            JOptionPane.showMessageDialog(mFrame, "No occurrences found.");
     }
 }
