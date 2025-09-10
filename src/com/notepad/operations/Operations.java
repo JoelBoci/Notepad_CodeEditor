@@ -17,9 +17,16 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Operations {
 
@@ -87,6 +94,19 @@ public class Operations {
 
             // Update text area GUI
             textArea.setText(fileText.toString());
+
+            Path path = selectedFile.toPath();
+            Charset charset = sniffCharset(path);
+            byte[] bytes = Files.readAllBytes(path);
+            String text = new String(bytes, charset);
+            if (!text.isEmpty() && text.charAt(0) == '\uFEFF')
+                text = text.substring(1);
+
+            String eol = sniffEol(text);
+            textArea.putClientProperty("encoding", charset.displayName());
+            textArea.putClientProperty("eol", eol);
+            textArea.setText(text);
+
             logger.info("Opened file: '{}'", selectedFile);
         } catch (IOException e) {
             logger.error("Error opening file: {}", e.getMessage(), e);
@@ -104,9 +124,11 @@ public class Operations {
         try {
             // Write to the current file
             logger.info("Attempting to save file...");
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(currentFile));
-            bufferedWriter.write(textArea.getText());
-            bufferedWriter.close();
+            try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(currentFile), StandardCharsets.UTF_8))) {
+                bufferedWriter.write(textArea.getText());
+            }
+
+            textArea.putClientProperty("encoding", StandardCharsets.UTF_8.displayName());
             logger.info("File successfully saved :)");
         } catch (IOException e) {
             logger.error("Error saving file: {}", e.getMessage(), e);
@@ -132,9 +154,11 @@ public class Operations {
             selectedFile.createNewFile();
 
             // Write the user's text into the file we just created
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(selectedFile));
-            bufferedWriter.write(textArea.getText());
-            bufferedWriter.close();
+            try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(selectedFile), StandardCharsets.UTF_8))) {
+                bufferedWriter.write(textArea.getText());
+            }
+
+            textArea.putClientProperty("encoding", StandardCharsets.UTF_8.displayName());
 
             // Update the title header of the GUI to the saved text file name
             frame.setTitle(fileName);
@@ -171,5 +195,28 @@ public class Operations {
     public void redo(UndoManager undoManager) {
         if (undoManager.canRedo())
             undoManager.redo();
+    }
+
+    private static Charset sniffCharset(Path path) throws IOException {
+        try (var in = Files.newInputStream(path)) {
+            byte[] bom = new byte[3];
+            int n = in.read(bom);
+
+            if (n >= 3 && (bom[0] & 0xFF) == 0xEF && (bom[1] & 0xFF) == 0xBB && (bom[2] & 0xFF) == 0xBF) {
+                return StandardCharsets.UTF_8;
+            }
+
+            if (n >= 2) {
+                if ((bom[0] & 0xFF) == 0xFF && (bom[1] & 0xFF) == 0xFE) return StandardCharsets.UTF_16LE;
+                if ((bom[0] & 0xFF) == 0xFE && (bom[1] & 0xFF) == 0xFF) return StandardCharsets.UTF_16BE;
+            }
+        }
+        return StandardCharsets.UTF_8;
+    }
+
+    private static String sniffEol(String text) {
+        if (text.contains("\r\n")) return "CRLF";
+        if (text.contains("\r"))   return "CR";
+        return "LF";
     }
 }
