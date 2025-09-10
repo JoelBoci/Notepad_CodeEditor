@@ -1,7 +1,5 @@
 package com.notepad.gui.menuItems;
 
-
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JTextArea;
@@ -18,9 +16,6 @@ public class FormatMenu extends JMenu {
     }
 
     private void createFormatMenu() {
-        JCheckBoxMenuItem wordWrapMenuItem = new JCheckBoxMenuItem("Word Wrap");
-        wordWrapMenuItem.addActionListener(_ -> wordWrap(wordWrapMenuItem));
-
         JMenu alignTextMenu = new JMenu("Align");
 
         JMenuItem alignTextLeftMenuItem = new JMenuItem("Left");
@@ -32,18 +27,10 @@ public class FormatMenu extends JMenu {
         JMenuItem fontMenuItem = new JMenuItem("Font...");
         fontMenuItem.addActionListener(_ -> fontEditor());
 
-        add(wordWrapMenuItem);
         alignTextMenu.add(alignTextLeftMenuItem);
         alignTextMenu.add(alignTextRightMenuItem);
         add(alignTextMenu);
         add(fontMenuItem);
-    }
-
-    private void wordWrap(JCheckBoxMenuItem item) {
-        boolean isChecked = item.getState();
-
-        textArea.setLineWrap(isChecked);
-        textArea.setWrapStyleWord(isChecked);
     }
 
     private void alignTextLeft() {

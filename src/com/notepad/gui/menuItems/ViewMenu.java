@@ -8,57 +8,73 @@ import javax.swing.KeyStroke;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 
+import java.util.function.IntConsumer;
+
 public class ViewMenu extends JMenu {
 
     private final JTextArea textArea;
+    private final IntConsumer onZoomChanged;
+    private final Font baseFont;
 
-    public ViewMenu(JTextArea textArea) {
+    private int zoomPercent = 100;
+    private final int DEFAULT_ZOOM = 100;
+    private final int MIN_ZOOM = 50;
+    private final int MAX_ZOOM = 300;
+
+    JMenuItem zoomInMenuItem = new JMenuItem("Zoom In");
+    JMenuItem zoomOutMenuItem = new JMenuItem("Zoom Out");
+    JMenuItem restoreDefaultZoomMenuItem = new JMenuItem("Restore Default Zoom");
+
+    public ViewMenu(JTextArea textArea, IntConsumer onZoomChanged) {
         super("View");
         this.textArea = textArea;
+        this.onZoomChanged = onZoomChanged;
+        this.baseFont = textArea.getFont();
         createViewMenu();
+        applyZoom(DEFAULT_ZOOM);
     }
 
     private void createViewMenu() {
-        JMenuItem zoomInMenuItem = new JMenuItem("Zoom In");
-        zoomInMenuItem.addActionListener(_ -> zoomIn());
+        zoomInMenuItem.addActionListener(_ -> applyZoom(zoomPercent + 10));
         zoomInMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, KeyEvent.CTRL_DOWN_MASK));
 
-        JMenuItem zoomOutMenuItem = new JMenuItem("Zoom Out");
-        zoomOutMenuItem.addActionListener(_ -> zoomOut());
-        zoomOutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
+        zoomOutMenuItem.addActionListener(_ -> applyZoom(zoomPercent - 10));
+        zoomOutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK));
 
-        JMenuItem restoreDefaultZoomMenuItem = new JMenuItem("Restore Default Zoom");
-        restoreDefaultZoomMenuItem.addActionListener(_ -> defaultZoom());
+        restoreDefaultZoomMenuItem.addActionListener(_ -> applyZoom(DEFAULT_ZOOM));
 
         add(zoomInMenuItem);
         add(zoomOutMenuItem);
         add(restoreDefaultZoomMenuItem);
     }
 
-    private void zoomIn() {
-        Font currentFont = textArea.getFont();
-        textArea.setFont(new Font(
-                currentFont.getName(),
-                currentFont.getStyle(),
-                currentFont.getSize() + 1
-        ));
+    private void applyZoom(int newPercent) {
+        newPercent = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newPercent));
+        if (newPercent == zoomPercent) {
+            updateMenuItemStates();
+            return;
+        }
+        zoomPercent = newPercent;
+
+        int newSize = Math.max(8, Math.round(baseFont.getSize2D() * (zoomPercent / 100f)));
+        Font scaled = baseFont.deriveFont((float) newSize);
+        textArea.setFont(scaled);
+
+        updateMenuItemStates();
+
+        if (onZoomChanged != null) {
+            onZoomChanged.accept(zoomPercent);
+        }
     }
 
-    private void zoomOut() {
-        Font currentFont = textArea.getFont();
-        textArea.setFont(new Font(
-                currentFont.getName(),
-                currentFont.getStyle(),
-                currentFont.getSize() - 1
-        ));
-    }
+    private void updateMenuItemStates() {
+        if (zoomInMenuItem != null)
+            zoomInMenuItem.setEnabled(zoomPercent < MAX_ZOOM);
 
-    private void defaultZoom() {
-        Font currentFont = textArea.getFont();
-        textArea.setFont(new Font(
-                currentFont.getName(),
-                currentFont.getStyle(),
-                14
-        ));
+        if (zoomOutMenuItem != null)
+            zoomOutMenuItem.setEnabled(zoomPercent > MIN_ZOOM);
+
+        if (restoreDefaultZoomMenuItem != null)
+            restoreDefaultZoomMenuItem.setEnabled(zoomPercent != 100);
     }
 }
