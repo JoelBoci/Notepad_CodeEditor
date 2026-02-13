@@ -42,18 +42,18 @@ import org.slf4j.LoggerFactory;
 
 public class CodeEditor {
 
-    private static final Logger logger = LoggerFactory.getLogger(CodeEditor.class);
+    private static final Logger mLogger = LoggerFactory.getLogger(CodeEditor.class);
 
-    private JFrame frame;
-    private RSyntaxTextArea codeArea;
-    private String className;
-    private String packageName;
-    private Operations operations;
+    private final JFrame mFrame;
+    private final RSyntaxTextArea mCodeArea;
+    private String mClassName;
+    private String mPackageName;
+    private final Operations mOperations;
 
-    private UndoManager undoManager;
+    private final UndoManager mUndoManager;
 
-    private final JFileChooser fileChooser;
-    private File currentFile;
+    private final JFileChooser mFileChooser;
+    private File mCurrentFile;
 
     private static final Map<String, String> LANGUAGE_SYNTAX_MAP = Map.of(
             "Java", SyntaxConstants.SYNTAX_STYLE_JAVA,
@@ -66,33 +66,33 @@ public class CodeEditor {
     );
 
     public CodeEditor() {
-        frame = new JFrame("Code Editor");
-        operations = new Operations();
+        mFrame = new JFrame("Code Editor");
+        mOperations = new Operations();
 
-        codeArea = new RSyntaxTextArea();
-        codeArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA); // Default style
-        codeArea.setCodeFoldingEnabled(true);
+        mCodeArea = new RSyntaxTextArea();
+        mCodeArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA); // Default style
+        mCodeArea.setCodeFoldingEnabled(true);
 
-        RTextScrollPane scrollPane = new RTextScrollPane(codeArea);
-        frame.add(scrollPane);
+        RTextScrollPane scrollPane = new RTextScrollPane(mCodeArea);
+        mFrame.add(scrollPane);
 
         showLanguageSelectionDialog();
 
-        frame.setJMenuBar(createMenuBar());
+        mFrame.setJMenuBar(createMenuBar());
 
-        frame.setSize(800, 600);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        mFrame.setSize(800, 600);
+        mFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        this.fileChooser = new JFileChooser();
-        this.fileChooser.setFileFilter(new FileNameExtensionFilter("Java File", "java"));
-        this.fileChooser.setCurrentDirectory(new File("src/codesnippets"));
+        this.mFileChooser = new JFileChooser();
+        this.mFileChooser.setFileFilter(new FileNameExtensionFilter("Java File", "java"));
+        this.mFileChooser.setCurrentDirectory(new File("src/codesnippets"));
 
-        undoManager = new UndoManager();
-        codeArea.getDocument().addUndoableEditListener(e -> undoManager.addEdit(e.getEdit()));
+        mUndoManager = new UndoManager();
+        mCodeArea.getDocument().addUndoableEditListener(e -> mUndoManager.addEdit(e.getEdit()));
     }
 
     private void showLanguageSelectionDialog() {
-        JDialog languageDialog = new JDialog(frame, "Select Language", true);
+        JDialog languageDialog = new JDialog(mFrame, "Select Language", true);
         languageDialog.setLayout(new MigLayout());
         languageDialog.setResizable(false);
 
@@ -104,17 +104,17 @@ public class CodeEditor {
         JButton okButton = new JButton("OK");
         okButton.addActionListener(_ -> {
             String selectedLanguage = (String) languageDropdown.getSelectedItem();
-            codeArea.setSyntaxEditingStyle(LANGUAGE_SYNTAX_MAP.get(selectedLanguage));
-            frame.setTitle("Code Editor (" + selectedLanguage + ")");
+            mCodeArea.setSyntaxEditingStyle(LANGUAGE_SYNTAX_MAP.get(selectedLanguage));
+            mFrame.setTitle("Code Editor (" + selectedLanguage + ")");
             languageDialog.dispose();
-            frame.setVisible(true);
-            logger.info("Selected language -> '{}'", selectedLanguage);
+            mFrame.setVisible(true);
+            mLogger.info("Selected language -> '{}'", selectedLanguage);
         });
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(_ -> {
             languageDialog.dispose();
-            frame.dispose();
+            mFrame.dispose();
         });
 
         languageDialog.add(languageLabel, "left, split 2");
@@ -134,40 +134,40 @@ public class CodeEditor {
         JMenu fileMenu = new JMenu("File");
 
         JMenuItem newFile = new JMenuItem("New");
-        newFile.addActionListener(_ -> operations.newCodeEditor());
+        newFile.addActionListener(_ -> mOperations.newCodeEditor());
 
         JMenuItem openFile = new JMenuItem("Open");
-        openFile.addActionListener(_ -> operations.openFile(frame, codeArea, fileChooser, currentFile));
+        openFile.addActionListener(_ -> mOperations.openFile(mFrame, mCodeArea, mFileChooser, mCurrentFile));
 
         JMenuItem saveFile = new JMenuItem("Save");
-        saveFile.addActionListener(_ -> operations.saveFile(frame, codeArea, fileChooser, currentFile));
+        saveFile.addActionListener(_ -> mOperations.saveFile(mFrame, mCodeArea, mFileChooser, mCurrentFile));
 
         JMenuItem exitApp = new JMenuItem("Exit");
-        exitApp.addActionListener(_ -> operations.exit(frame));
+        exitApp.addActionListener(_ -> mOperations.exit(mFrame));
 
         fileMenu.add(newFile);
         fileMenu.add(openFile);
         fileMenu.add(saveFile);
-        fileMenu.addSeparator(); // Adds a separator line
+        fileMenu.addSeparator();
         fileMenu.add(exitApp);
 
         // Create "Edit" menu
         JMenu editMenu = new JMenu("Edit");
 
         JMenuItem cut = new JMenuItem("Cut");
-        cut.addActionListener(_ -> operations.cut(codeArea));
+        cut.addActionListener(_ -> mOperations.cut(mCodeArea));
 
         JMenuItem copy = new JMenuItem("Copy");
-        copy.addActionListener(_ -> operations.copy(codeArea));
+        copy.addActionListener(_ -> mOperations.copy(mCodeArea));
 
         JMenuItem paste = new JMenuItem("Paste");
-        paste.addActionListener(_ -> operations.paste(codeArea));
+        paste.addActionListener(_ -> mOperations.paste(mCodeArea));
 
         JMenuItem undo = new JMenuItem("Undo");
-        undo.addActionListener(_ -> operations.undo(undoManager));
+        undo.addActionListener(_ -> mOperations.undo(mUndoManager));
 
         JMenuItem redo = new JMenuItem("Redo");
-        redo.addActionListener(_ -> operations.redo(undoManager));
+        redo.addActionListener(_ -> mOperations.redo(mUndoManager));
 
         editMenu.add(cut);
         editMenu.add(copy);
@@ -180,10 +180,10 @@ public class CodeEditor {
 
         compile.addActionListener(_ -> compileCode());
         run.addActionListener(_ -> {
-            if (className != null && packageName != null)
-                runCode(packageName, className);
+            if (mClassName != null && mPackageName != null)
+                runCode(mPackageName, mClassName);
             else
-                JOptionPane.showMessageDialog(frame, "Compile the code first.");
+                JOptionPane.showMessageDialog(mFrame, "Compile the code first.");
         });
 
         runMenu.add(compile);
@@ -202,70 +202,70 @@ public class CodeEditor {
         menuBar.add(runMenu);
         menuBar.add(formatMenu);
 
-        logger.info("Code editor menu bar created");
+        mLogger.info("Code editor menu bar created");
         return menuBar;
     }
 
     // Method to compile the code
     private void compileCode() {
         try {
-            logger.info("Attempting code compilation...");
-            String code = codeArea.getText();
-            String packageName = extractPackageName(code);
-            String className = extractClassName(code);
+            mLogger.info("Attempting code compilation...");
+            String code = mCodeArea.getText();
+            String mPackageName = extractPackageName(code);
+            String mClassName = extractClassName(code);
 
-            if (className == null || packageName == null) {
-                JOptionPane.showMessageDialog(frame, "No class or package found in the code.");
-                logger.info("No class or package found in the code");
+            if (mClassName == null || mPackageName == null) {
+                JOptionPane.showMessageDialog(mFrame, "No class or package found in the code.");
+                mLogger.info("No class or package found in the code");
                 return;
             }
 
-            this.className = className; // Store class name
-            this.packageName = packageName; // Store package name
+            this.mClassName = mClassName; // Store class name
+            this.mPackageName = mPackageName; // Store package name
 
             // Create directories based on the package name
-            logger.info("Creating directories based on package name '{}'", packageName);
-            File sourceDir = new File("src/" + packageName.replace('.', '/'));
+            mLogger.info("Creating directories based on package name '{}'", mPackageName);
+            File sourceDir = new File("src/" + mPackageName.replace('.', '/'));
             sourceDir.mkdirs(); // Ensure the directory structure exists
 
             // Create the file in the correct directory
-            File sourceFile = new File(sourceDir, className + ".java");
-            logger.info("Created file '{}'", sourceFile);
+            File sourceFile = new File(sourceDir, mClassName + ".java");
+            mLogger.info("Created file '{}'", sourceFile);
 
             // Write code to the file
-            logger.info("Writing code to file '{}'", sourceFile);
+            mLogger.info("Writing code to file '{}'", sourceFile);
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(sourceFile))) {
                 writer.write(code);
             }
 
             // Compile the source file
-            logger.info("Compiling the source file");
+            mLogger.info("Compiling the source file");
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
             if (compiler == null) {
-                JOptionPane.showMessageDialog(frame, "No Java compiler found. Please make sure you are using a JDK, not a JRE.");
-                logger.warn("No Java compiler found. Please make sure you are using a JDK, not a JRE.");
+                JOptionPane.showMessageDialog(mFrame, "No Java compiler found. Please make sure you are using a JDK, not a JRE.");
+                mLogger.warn("No Java compiler found. Please make sure you are using a JDK, not a JRE.");
                 return;
             }
 
             int result = compiler.run(null, null, null, "-d", "bin", sourceFile.getPath());
 
             if (result == 0) {
-                JOptionPane.showMessageDialog(frame, "Compilation successful.");
-                logger.info("Code compiled successfully");
+                JOptionPane.showMessageDialog(mFrame, "Compilation successful.");
+                mLogger.info("Code compiled successfully");
             } else {
-                JOptionPane.showMessageDialog(frame, "Compilation failed.");
-                logger.error("Error while compiling code");
+                JOptionPane.showMessageDialog(mFrame, "Compilation failed.");
+                mLogger.error("Error while compiling code");
             }
         } catch (IOException e) {
-            logger.error("Error while compiling code.", e);
-            JOptionPane.showMessageDialog(frame, "Error during compilation: " + e.getMessage());
+            mLogger.error("Error while compiling code.", e);
+            JOptionPane.showMessageDialog(mFrame, "Error during compilation: " + e.getMessage());
         }
     }
 
-    private void runCode(String packageName, String className) {
+    private void runCode(String mPackageName, String mClassName) {
         try {
-            logger.info("Attempting to run code...");
-            String fullClassName = packageName.isEmpty() ? className : packageName + "." + className;
+            mLogger.info("Attempting to run code...");
+            String fullClassName = mPackageName.isEmpty() ? mClassName : mPackageName + "." + mClassName;
 
             // Run the compiled class file from the `bin` directory
             ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", "bin", fullClassName);
@@ -273,7 +273,7 @@ public class CodeEditor {
 
             // Start the process
             Process process = processBuilder.start();
-            logger.info("Starting process...");
+            mLogger.info("Starting process...");
 
             // Capture and display the output
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
@@ -282,13 +282,13 @@ public class CodeEditor {
                 while ((line = reader.readLine()) != null)
                     output.append(line).append("\n");
 
-                JOptionPane.showMessageDialog(frame, !output.isEmpty() ? output.toString()
+                JOptionPane.showMessageDialog(mFrame, !output.isEmpty() ? output.toString()
                         : "No output", "Program Output", JOptionPane.INFORMATION_MESSAGE);
             }
-            logger.info("Code successfully run...");
+            mLogger.info("Code successfully run...");
         } catch (IOException e) {
-            logger.error("Error while running code.", e);
-            JOptionPane.showMessageDialog(frame, "Error running the program: " + e.getMessage());
+            mLogger.error("Error while running code.", e);
+            JOptionPane.showMessageDialog(mFrame, "Error running the program: " + e.getMessage());
         }
     }
 
@@ -323,26 +323,26 @@ public class CodeEditor {
             InputStream themeStream = getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/" + themeFile);
             if (themeStream != null) {
                 Theme theme = Theme.load(themeStream);
-                theme.apply(codeArea);
+                theme.apply(mCodeArea);
             } else {
-                logger.error("Theme file not found: {}", themeFile);
+                mLogger.error("Theme file not found: {}", themeFile);
             }
         } catch (Exception e) {
-            logger.error("Error while trying to find theme.", e);
+            mLogger.error("Error while trying to find theme.", e);
         }
     }
 
     public void reformatCode() {
-        String code = codeArea.getText();
+        String code = mCodeArea.getText();
         JavaParser parser = new JavaParser();
         // Parse the code
         CompilationUnit cu = parser.parse(code).getResult().orElse(null);
 
         if (cu != null) {
             String formattedCode = cu.toString(); // Convert back to string with formatting
-            codeArea.setText(formattedCode);
+            mCodeArea.setText(formattedCode);
         } else {
-            JOptionPane.showMessageDialog(frame, "Error parsing code.");
+            JOptionPane.showMessageDialog(mFrame, "Error parsing code.");
         }
     }
 }

@@ -7,10 +7,10 @@ import javax.swing.SwingUtilities;
 
 public class Main {
 
-    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+    private static final Logger mLogger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        logger.info("Starting Notepad...");
+        mLogger.info("Starting Notepad...");
         SwingUtilities.invokeLater(Notepad::new);
     }
 }

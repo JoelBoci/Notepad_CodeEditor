@@ -12,32 +12,31 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 
 public class StatusBar extends JPanel {
-    private final JLabel caretLabel = new JLabel("Ln 1, Col 1");
-    private final JLabel countLabel = new JLabel("Words: 0  Chars: 0");
-    private final JLabel zoomLabel  = new JLabel("Zoom: 100%");
-    private final JLabel encLabel   = new JLabel("UTF-8");
-    private final JLabel eolLabel   = new JLabel("LF");
+    private final JLabel mCaretLabel = new JLabel("Ln 1, Col 1");
+    private final JLabel mCountLabel = new JLabel("Words: 0  Chars: 0");
+    private final JLabel mZoomLabel  = new JLabel("Zoom: 100%");
+    private final JLabel mEncLabel   = new JLabel("UTF-8");
+    private final JLabel mEolLabel   = new JLabel("LF");
 
-    private JTextComponent editor;
+    private JTextComponent mEditor;
 
     public StatusBar() {
         setLayout(new MigLayout("insets 3 8 3 8, fillx", "[]12[]12[]12[]push[]", "[]"));
         setBorder(BorderFactory.createMatteBorder(
                 1, 0, 0, 0, UIManager.getColor("Component.borderColor")));
 
-        add(caretLabel, "gapright 12");
-        add(countLabel, "gapright 12");
-        add(encLabel, "gapright 12");
-        add(eolLabel, "gapright 12");
-        add(zoomLabel,  "alignx right");
+        add(mCaretLabel, "gapright 12");
+        add(mCountLabel, "gapright 12");
+        add(mEncLabel, "gapright 12");
+        add(mEolLabel, "gapright 12");
+        add(mZoomLabel,  "alignx right");
     }
 
-    /** Bind once to your editor (JTextArea/JTextPane). */
-    public void bindToEditor(JTextComponent editor) {
-        this.editor = editor;
+    public void bindToEditor(JTextComponent mEditor) {
+        this.mEditor = mEditor;
 
-        editor.addCaretListener(_ -> updateAll());
-        editor.getDocument().addDocumentListener(new DocumentListener() {
+        mEditor.addCaretListener(_ -> updateAll());
+        mEditor.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) { updateAll(); }
             public void removeUpdate(DocumentEvent e) { updateAll(); }
             public void changedUpdate(DocumentEvent e) { updateAll(); }
@@ -47,39 +46,39 @@ public class StatusBar extends JPanel {
     }
 
     public void setEncodingDisplay(String name) {
-        encLabel.setText(name);
+        mEncLabel.setText(name);
     }
 
     public void setEolDisplay(String eol) {
-        eolLabel.setText(eol);
+        mEolLabel.setText(eol);
     }
 
     public void setZoomPercent(int percent) {
-        zoomLabel.setText("Zoom: " + percent + "%");
+        mZoomLabel.setText("Zoom: " + percent + "%");
     }
 
     private void updateAll() {
-        if (editor == null) return;
+        if (mEditor == null) return;
 
         try {
-            int caret = editor.getCaretPosition();
-            var root = editor.getDocument().getDefaultRootElement();
+            int caret = mEditor.getCaretPosition();
+            var root = mEditor.getDocument().getDefaultRootElement();
             int line = root.getElementIndex(caret) + 1;
             int col  = caret - root.getElement(line - 1).getStartOffset() + 1;
-            caretLabel.setText("Ln " + line + ", Col " + col);
+            mCaretLabel.setText("Ln " + line + ", Col " + col);
         } catch (Exception ignored) {}
 
-        String text = editor.getText();
+        String text = mEditor.getText();
         int chars = text.length();
         int words = text.isBlank() ? 0 : text.trim().split("\\s+").length;
-        countLabel.setText("Words: " + words + "  Chars: " + chars);
+        mCountLabel.setText("Words: " + words + "  Chars: " + chars);
 
-        Object encProp = editor.getClientProperty("encoding");
+        Object encProp = mEditor.getClientProperty("encoding");
         if (encProp instanceof String s && !s.isBlank())
-            encLabel.setText(s);
+            mEncLabel.setText(s);
 
-        Object eolProp = editor.getClientProperty("eol");
+        Object eolProp = mEditor.getClientProperty("eol");
         if (eolProp instanceof String s2 && !s2.isBlank())
-            eolLabel.setText(s2);
+            mEolLabel.setText(s2);
     }
 }
