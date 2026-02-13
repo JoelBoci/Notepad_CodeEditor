@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FontMenu extends JDialog {
-
     Color mSelectedBlue = new Color(30, 144, 245);
     Color mBoneWhite = new Color(245, 245, 245);
 
