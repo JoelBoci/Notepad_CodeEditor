@@ -43,8 +43,7 @@ public class Notepad {
         Image image = imageIcon.getImage();
 
         mFrame = new JFrame("Notepad");
-        mFrame.setLayout(new MigLayout(
-                "insets 0, fill", "[grow]", "[grow][]"));
+        mFrame.setLayout(new MigLayout("insets 0, fill", "[grow]", "[grow][]"));
 
         mTextArea = new JTextArea();
         mTextArea.setLineWrap(true);

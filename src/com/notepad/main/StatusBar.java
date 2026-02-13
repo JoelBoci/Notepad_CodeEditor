@@ -32,7 +32,6 @@ public class StatusBar extends JPanel {
         add(mZoomLabel,  "alignx right");
     }
 
-    /** Bind once to your mEditor (JTextArea/JTextPane). */
     public void bindToEditor(JTextComponent mEditor) {
         this.mEditor = mEditor;
 

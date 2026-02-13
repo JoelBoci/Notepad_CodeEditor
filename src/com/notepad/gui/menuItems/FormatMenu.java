@@ -1,11 +1,14 @@
 package com.notepad.gui.menuItems;
 
+import lombok.Getter;
+
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JTextArea;
 
 import java.awt.ComponentOrientation;
 
+@Getter
 public class FormatMenu extends JMenu {
     private final JTextArea mTextArea;
 
@@ -43,9 +46,5 @@ public class FormatMenu extends JMenu {
 
     private void fontEditor() {
         new FontMenu(this).setVisible(true);
-    }
-
-    public JTextArea getmTextArea() {
-        return mTextArea;
     }
 }

@@ -21,8 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FontMenu extends JDialog {
-
-    Color mSelectedBlue = new Color(80, 106, 136);
+    Color mSelectedBlue = new Color(30, 144, 245);
     Color mBoneWhite = new Color(245, 245, 245);
 
     // Will need a reference to our GUI to make changes to the GUI from this class
@@ -46,28 +45,27 @@ public class FontMenu extends JDialog {
         setModal(true);
 
         setLayout(new MigLayout("insets 10, fillx",
-                "[grow,fill][pref!][pref!]",
-                "[][grow][]"));
+                "[grow,fill][pref!][pref!]"));
 
         addFontMenuComponents();
     }
 
     private void addFontMenuComponents() {
-        JPanel buttonPanel = new JPanel(new MigLayout());
+        JPanel buttonPanel = new JPanel(new MigLayout("fillx, ins 0"));
         JButton applyButton = new JButton("Apply");
         applyButton.addActionListener(_ -> apply());
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(_ -> cancel());
 
-        buttonPanel.add(applyButton);
+        buttonPanel.add(applyButton, "pushx, align right");
         buttonPanel.add(cancelButton);
 
         addFontChooser();
         addFontStyleChooser();
         addFontSizeChooser();
         addFontColorChooser();
-        add(buttonPanel);
+        add(buttonPanel, "newline, span, growx");
     }
 
     private void apply() {
@@ -82,20 +80,13 @@ public class FontMenu extends JDialog {
             default -> Font.BOLD | Font.ITALIC;
         };
 
-        // Get font size
         int fontSize = Integer.parseInt(mCurrentFontSizeField.getText());
-
-        // Get font colour
         Color fontColor = mCurrentColourBox.getBackground();
-
-        // Create font
         Font newFont = new Font(fontType, fontStyle, fontSize);
 
-        // Update text area font
-        mSource.getmTextArea().setFont(newFont);
+        mSource.getMTextArea().setFont(newFont);
 
-        // Update text area font color
-        mSource.getmTextArea().setForeground(fontColor);
+        mSource.getMTextArea().setForeground(fontColor);
 
         mLogger.info(
           "New Font Set: Font = '{}', Style = '{}', Size = '{}'", fontType, mCurrentFontStyleField.getText(), fontSize
@@ -111,14 +102,13 @@ public class FontMenu extends JDialog {
     }
 
     private void addFontChooser() {
-        // Font panel will display the current font and the list of fonts available to choose from
         JPanel fontPanel = new JPanel(new MigLayout("insets 0, fillx, wrap 1"));
 
         JLabel fontLabel = new JLabel("Font:");
         add(fontLabel, "cell 0 0");
 
         // Display the current font
-        mCurrentFontField = new JTextField(mSource.getmTextArea().getFont().getFontName());
+        mCurrentFontField = new JTextField(mSource.getMTextArea().getFont().getFontName());
         mCurrentFontField.setEditable(false);
         fontPanel.add(mCurrentFontField, "growx");
 
@@ -177,7 +167,7 @@ public class FontMenu extends JDialog {
         add(fontStyleLabel, "cell 1 0");
 
         // Get the current font style
-        int currentFontStyle = mSource.getmTextArea().getFont().getStyle();
+        int currentFontStyle = mSource.getMTextArea().getFont().getStyle();
         String currentFontStyleText = switch (currentFontStyle) {
             case Font.PLAIN -> "Plain";
             case Font.BOLD -> "Bold";
@@ -319,7 +309,7 @@ public class FontMenu extends JDialog {
         add(fontSizeLabel, "cell 2 0");
 
         mCurrentFontSizeField = new JTextField(
-                Integer.toString(mSource.getmTextArea().getFont().getSize())
+                Integer.toString(mSource.getMTextArea().getFont().getSize())
         );
         mCurrentFontSizeField.setEditable(false);
         fontSizePanel.add(mCurrentFontSizeField, "growx");
@@ -365,16 +355,16 @@ public class FontMenu extends JDialog {
     private void addFontColorChooser() {
         // Display the current colour of the text
         mCurrentColourBox = new JPanel();
-        mCurrentColourBox.setBackground(mSource.getmTextArea().getForeground());
+        mCurrentColourBox.setBackground(mSource.getMTextArea().getForeground());
         mCurrentColourBox.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         add(mCurrentColourBox, "cell 0 2, split 2");
 
         JButton chooseColourButton = new JButton("Choose Colour");
         chooseColourButton.addActionListener(_ -> {
-            Color c = JColorChooser.showDialog(FontMenu.this, "Select a colour", Color.BLACK);
+            Color colour = JColorChooser.showDialog(FontMenu.this, "Select a colour", Color.BLACK);
 
             // Update the color to the selected colour
-            mCurrentColourBox.setBackground(c);
+            mCurrentColourBox.setBackground(colour);
         });
 
         add(chooseColourButton, "gapleft 8, wrap");

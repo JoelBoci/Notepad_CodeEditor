@@ -148,7 +148,7 @@ public class CodeEditor {
         fileMenu.add(newFile);
         fileMenu.add(openFile);
         fileMenu.add(saveFile);
-        fileMenu.addSeparator(); // Adds a separator line
+        fileMenu.addSeparator();
         fileMenu.add(exitApp);
 
         // Create "Edit" menu
@@ -211,8 +211,8 @@ public class CodeEditor {
         try {
             mLogger.info("Attempting code compilation...");
             String code = mCodeArea.getText();
-            String mPackageName = extractmPackageName(code);
-            String mClassName = extractmClassName(code);
+            String mPackageName = extractPackageName(code);
+            String mClassName = extractClassName(code);
 
             if (mClassName == null || mPackageName == null) {
                 JOptionPane.showMessageDialog(mFrame, "No class or package found in the code.");
@@ -265,10 +265,10 @@ public class CodeEditor {
     private void runCode(String mPackageName, String mClassName) {
         try {
             mLogger.info("Attempting to run code...");
-            String fullmClassName = mPackageName.isEmpty() ? mClassName : mPackageName + "." + mClassName;
+            String fullClassName = mPackageName.isEmpty() ? mClassName : mPackageName + "." + mClassName;
 
             // Run the compiled class file from the `bin` directory
-            ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", "bin", fullmClassName);
+            ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", "bin", fullClassName);
             processBuilder.redirectErrorStream(true);
 
             // Start the process
@@ -292,7 +292,7 @@ public class CodeEditor {
         }
     }
 
-    private String extractmPackageName(String code) {
+    private String extractPackageName(String code) {
         String[] lines = code.split("\n");
         for (String line : lines) {
             line = line.trim();
@@ -303,7 +303,7 @@ public class CodeEditor {
         return ""; // No package name found
     }
 
-    private String extractmClassName(String code) {
+    private String extractClassName(String code) {
         String[] lines = code.split("\n");
         for (String line : lines) {
             line = line.trim();
