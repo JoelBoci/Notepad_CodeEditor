@@ -32,28 +32,29 @@ public class Operations {
     private static final Logger mLogger = LoggerFactory.getLogger(Operations.class);
 
     // File Operations
-    public void newFile(JFrame frame, JTextArea textArea, File currentFile) {
+    public File newFile(JFrame frame, JTextArea textArea, File currentFile) {
         String[] options = {"New Window", "This Window", "Cancel"};
-        String message = "Where would you like to open the new note?";
-        String title = "Select One:";
 
-        int option = JOptionPane.showOptionDialog(frame, message, title,
-                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
-                null, options, options[0]
-        );
+        int option = JOptionPane.showOptionDialog(frame, "Where would you like to open the new note?",
+                "Select One:", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, options, options[0]);
 
         switch (option) {
             case 0 -> {
                 SwingUtilities.invokeLater(Notepad::new);
                 mLogger.info("New file created in new window");
+                return currentFile; // current window unchanged
             }
             case 1 -> {
                 frame.setTitle("Notepad");
                 textArea.setText("");
-                currentFile = null;
                 mLogger.info("New file created in current window");
+                return null; // reset tracked file
             }
-            default -> mLogger.info("New file operation cancelled by user.");
+            default -> {
+                mLogger.info("New file operation cancelled");
+                return currentFile; // no change
+            }
         }
     }
 
@@ -67,9 +68,10 @@ public class Operations {
         mLogger.info("New code editor created");
     }
 
-    public void openFile(JFrame frame, JTextArea textArea, JFileChooser fileChooser, File currentFile) {
+    public File openFile(JFrame frame, JTextArea textArea, JFileChooser fileChooser, File currentFile) {
         int option = fileChooser.showOpenDialog(frame);
-        if (option != JFileChooser.APPROVE_OPTION) return;
+        if (option != JFileChooser.APPROVE_OPTION)
+            return currentFile;
 
         try {
             // Get the selected file
@@ -107,38 +109,48 @@ public class Operations {
             textArea.setText(text);
 
             mLogger.info("Opened file: '{}'", selectedFile);
+            return selectedFile;
         } catch (IOException e) {
             mLogger.error("Error opening file: {}", e.getMessage(), e);
+            JOptionPane.showMessageDialog(frame, "Error opening file: " + e.getMessage());
+            return currentFile;
         }
     }
 
-    public void saveFile(JFrame frame, JTextArea textArea, JFileChooser fileChooser, File currentFile) {
-        // If the current file is null then we have to perform save as functionality
-        if (currentFile == null) saveAs(frame, textArea, fileChooser, currentFile);
+    public File saveFile(JFrame frame, JTextArea textArea, JFileChooser fileChooser, File currentFile) {
+        File targetFile = currentFile;
 
-        // If the user chooses to cancel saving the file this means that current file will still
-        // be null, then we want to prevent executing the rest of the cod
-        if (currentFile == null) return;
+        // If null -> Save As
+        if (targetFile == null) {
+            targetFile = saveAs(frame, textArea, fileChooser);
+            if (targetFile == null)
+                return null;
+        }
 
         try {
             // Write to the current file
             mLogger.info("Attempting to save file...");
-            try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(currentFile), StandardCharsets.UTF_8))) {
+            try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetFile), StandardCharsets.UTF_8))) {
                 bufferedWriter.write(textArea.getText());
             }
 
             textArea.putClientProperty("encoding", StandardCharsets.UTF_8.displayName());
             mLogger.info("File successfully saved :)");
+
+            return targetFile;
         } catch (IOException e) {
             mLogger.error("Error saving file: {}", e.getMessage(), e);
+            JOptionPane.showMessageDialog(frame, "Error saving file: " + e.getMessage());
+            return currentFile;
         }
     }
 
     // the saveAs method creates a new text file and saves user text
-    public void saveAs(JFrame frame, JTextArea textArea, JFileChooser fileChooser, File currentFile) {
+    public File saveAs(JFrame frame, JTextArea textArea, JFileChooser fileChooser) {
         int option = fileChooser.showSaveDialog(frame);
 
-        if (option != JFileChooser.APPROVE_OPTION) return;
+        if (option != JFileChooser.APPROVE_OPTION)
+            return null;
 
         try {
             File selectedFile = fileChooser.getSelectedFile();
@@ -162,14 +174,15 @@ public class Operations {
             // Update the title header of the GUI to the saved text file name
             frame.setTitle(fileName);
 
-            // Update the current file
-            currentFile = selectedFile;
-
             // Show display dialog
             JOptionPane.showMessageDialog(frame, "Saved file " + fileName);
             mLogger.info("'{}' has been saved :)", fileName);
+
+            return selectedFile;
         } catch (Exception e) {
             mLogger.error("Error saving file as: {}", e.getMessage(), e);
+            JOptionPane.showMessageDialog(frame, "Error saving file: " + e.getMessage());
+            return null;
         }
     }
 

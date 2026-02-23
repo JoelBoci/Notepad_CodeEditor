@@ -46,8 +46,6 @@ public class CodeEditor {
 
     private final JFrame mFrame;
     private final RSyntaxTextArea mCodeArea;
-    private String mClassName;
-    private String mPackageName;
     private final Operations mOperations;
 
     private final UndoManager mUndoManager;
@@ -64,6 +62,10 @@ public class CodeEditor {
             "CSS", SyntaxConstants.SYNTAX_STYLE_CSS,
             "SQL", SyntaxConstants.SYNTAX_STYLE_SQL
     );
+    private String mSelectedLanguage = "Java";
+
+    private boolean mCompiledOk = false;
+    private String mLastCompiledMainClass = null;
 
     public CodeEditor() {
         mFrame = new JFrame("Code Editor");
@@ -99,12 +101,15 @@ public class CodeEditor {
         JLabel languageLabel = new JLabel("Language:");
 
         JComboBox<String> languageDropdown = new JComboBox<>(LANGUAGE_SYNTAX_MAP.keySet().toArray(new String[0]));
-        languageDropdown.setSelectedItem(0);
+        languageDropdown.setSelectedIndex(0);
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(_ -> {
             String selectedLanguage = (String) languageDropdown.getSelectedItem();
+            mSelectedLanguage = selectedLanguage;
             mCodeArea.setSyntaxEditingStyle(LANGUAGE_SYNTAX_MAP.get(selectedLanguage));
+            mCompiledOk = false;
+            mLastCompiledMainClass = null;
             mFrame.setTitle("Code Editor (" + selectedLanguage + ")");
             languageDialog.dispose();
             mFrame.setVisible(true);
@@ -137,10 +142,10 @@ public class CodeEditor {
         newFile.addActionListener(_ -> mOperations.newCodeEditor());
 
         JMenuItem openFile = new JMenuItem("Open");
-        openFile.addActionListener(_ -> mOperations.openFile(mFrame, mCodeArea, mFileChooser, mCurrentFile));
+        openFile.addActionListener(_ -> mCurrentFile = mOperations.openFile(mFrame, mCodeArea, mFileChooser, mCurrentFile));
 
         JMenuItem saveFile = new JMenuItem("Save");
-        saveFile.addActionListener(_ -> mOperations.saveFile(mFrame, mCodeArea, mFileChooser, mCurrentFile));
+        saveFile.addActionListener(_ -> mCurrentFile = mOperations.saveFile(mFrame, mCodeArea, mFileChooser, mCurrentFile));
 
         JMenuItem exitApp = new JMenuItem("Exit");
         exitApp.addActionListener(_ -> mOperations.exit(mFrame));
@@ -178,13 +183,14 @@ public class CodeEditor {
         JMenuItem compile = new JMenuItem("Compile");
         JMenuItem run = new JMenuItem("Run");
 
-        compile.addActionListener(_ -> compileCode());
-        run.addActionListener(_ -> {
-            if (mClassName != null && mPackageName != null)
-                runCode(mPackageName, mClassName);
+        compile.addActionListener(_ -> {
+            if ("Java".equals(mSelectedLanguage))
+                compileCode();
             else
-                JOptionPane.showMessageDialog(mFrame, "Compile the code first.");
+                JOptionPane.showMessageDialog(mFrame, "Compile is only needed for Java (for now).");
         });
+
+        run.addActionListener(_ -> new Thread(this::runSelectedLanguage, "CodeRunner").start());
 
         runMenu.add(compile);
         runMenu.add(run);
@@ -206,66 +212,140 @@ public class CodeEditor {
         return menuBar;
     }
 
-    // Method to compile the code
-    private void compileCode() {
+    private void runSelectedLanguage() {
         try {
-            mLogger.info("Attempting code compilation...");
-            String code = mCodeArea.getText();
-            String mPackageName = extractPackageName(code);
-            String mClassName = extractClassName(code);
+            switch (mSelectedLanguage) {
+                case "Java" -> {
+                    if (!mCompiledOk || mLastCompiledMainClass == null) {
+                        JOptionPane.showMessageDialog(mFrame, "Compile the code first.");
+                        return;
+                    }
+                    runCode(mLastCompiledMainClass);
+                }
+                case "Python" -> runScript(detectPythonCommand(), ".py");
+                case "JavaScript" -> runScript("node", ".js");
+                default -> JOptionPane.showMessageDialog(mFrame, "Run not supported for " + mSelectedLanguage + " yet.");
 
-            if (mClassName == null || mPackageName == null) {
-                JOptionPane.showMessageDialog(mFrame, "No class or package found in the code.");
-                mLogger.info("No class or package found in the code");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(mFrame, "Run error: " + e.getMessage());
+        }
+    }
+
+    private void runScript(String interpreter, String extension) {
+        try {
+            File dir = new File("snippets");
+            if (!dir.exists() && !dir.mkdirs()) {
+                JOptionPane.showMessageDialog(mFrame, "Could not create snippets directory.");
                 return;
             }
 
-            this.mClassName = mClassName; // Store class name
-            this.mPackageName = mPackageName; // Store package name
+            // For scripts, we don't need class name rules, just write a temp file
+            File sciptFile = new File(dir, "Main" + extension);
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(sciptFile))) {
+                writer.write(mCodeArea.getText());
+            }
 
-            // Create directories based on the package name
-            mLogger.info("Creating directories based on package name '{}'", mPackageName);
-            File sourceDir = new File("src/" + mPackageName.replace('.', '/'));
-            sourceDir.mkdirs(); // Ensure the directory structure exists
+            ProcessBuilder pb = new ProcessBuilder(interpreter, sciptFile.getAbsolutePath());
+            pb.directory(dir);
+            pb.redirectErrorStream(true);
 
-            // Create the file in the correct directory
-            File sourceFile = new File(sourceDir, mClassName + ".java");
-            mLogger.info("Created file '{}'", sourceFile);
+            Process process = pb.start();
+            StringBuilder output = new StringBuilder();
 
-            // Write code to the file
-            mLogger.info("Writing code to file '{}'", sourceFile);
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null)
+                    output.append(line).append("\n");
+            }
+
+            String msg = !output.isEmpty() ? output.toString() : "No output";
+            JOptionPane.showMessageDialog(mFrame, msg, "Program Output (exit " + process.waitFor() + ")",  JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(mFrame, "Could not run " + mSelectedLanguage + ".\n\n" +
+                            "Make sure '" + interpreter + "' is installed and on PATH.\n\n" + e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            JOptionPane.showMessageDialog(mFrame, "Run interrupted.");
+        }
+    }
+
+    private String detectPythonCommand() {
+        // Windows often uses "py" launcher, mac/linux often use python3
+        // Will be configurable soon
+        String os = System.getProperty("os.name").toLowerCase();
+        return os.contains("win") ? "py" : "python3";
+    }
+
+    // Method to compile the code
+    private void compileCode() {
+        mCompiledOk = false;
+        mLastCompiledMainClass = null;
+
+        try {
+            mLogger.info("Attempting code compilation...");
+            String code = mCodeArea.getText();
+
+            String packageName = extractPackageName(code); // "" allowed
+            String className = extractClassName(code);
+
+            if (className == null) {
+                JOptionPane.showMessageDialog(mFrame, "No class found in the code.");
+                mLogger.info("No class found in the code");
+                return;
+            }
+
+            // Where we store the generated .java
+            File sourceDir = packageName.isEmpty()
+                    ? new File("snippets")
+                    : new File("snippets/" + packageName.replace('.', '/'));
+
+            if (!sourceDir.exists() && !sourceDir.mkdirs()) {
+                JOptionPane.showMessageDialog(mFrame, "Could not create directory: " + sourceDir.getPath());
+                return;
+            }
+
+            File sourceFile = new File(sourceDir, className + ".java");
+
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(sourceFile))) {
                 writer.write(code);
             }
 
-            // Compile the source file
-            mLogger.info("Compiling the source file");
-            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-            if (compiler == null) {
-                JOptionPane.showMessageDialog(mFrame, "No Java compiler found. Please make sure you are using a JDK, not a JRE.");
-                mLogger.warn("No Java compiler found. Please make sure you are using a JDK, not a JRE.");
+            // Ensure output dir exists
+            File binDir = new File("bin");
+            if (!binDir.exists() && !binDir.mkdirs()) {
+                JOptionPane.showMessageDialog(mFrame, "Could not create output directory: " + binDir.getPath());
                 return;
             }
 
-            int result = compiler.run(null, null, null, "-d", "bin", sourceFile.getPath());
+            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+            if (compiler == null) {
+                JOptionPane.showMessageDialog(mFrame, "No Java compiler found. Please use a JDK (not a JRE).");
+                return;
+            }
+
+            int result = compiler.run(null, null, null, "-d", binDir.getPath(), sourceFile.getPath());
 
             if (result == 0) {
+                mCompiledOk = true;
+                mLastCompiledMainClass = packageName.isEmpty() ? className : packageName + "." + className;
+
                 JOptionPane.showMessageDialog(mFrame, "Compilation successful.");
-                mLogger.info("Code compiled successfully");
+                mLogger.info("Code compiled successfully: {}", mLastCompiledMainClass);
             } else {
                 JOptionPane.showMessageDialog(mFrame, "Compilation failed.");
-                mLogger.error("Error while compiling code");
+                mLogger.error("Compilation failed (exit code {})", result);
             }
+
         } catch (IOException e) {
             mLogger.error("Error while compiling code.", e);
             JOptionPane.showMessageDialog(mFrame, "Error during compilation: " + e.getMessage());
         }
     }
 
-    private void runCode(String mPackageName, String mClassName) {
+    private void runCode(String fullClassName) {
         try {
             mLogger.info("Attempting to run code...");
-            String fullClassName = mPackageName.isEmpty() ? mClassName : mPackageName + "." + mClassName;
 
             // Run the compiled class file from the `bin` directory
             ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", "bin", fullClassName);
