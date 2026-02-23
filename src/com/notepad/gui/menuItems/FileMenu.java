@@ -40,22 +40,22 @@ public class FileMenu extends JMenu {
         JMenu newMenu = new JMenu("New");
 
         JMenuItem newNotepadMenuItem = new JMenuItem("New Note");
-        newNotepadMenuItem.addActionListener(_ -> mOperations.newFile(mFrame, mTextArea, mCurrentFile));
+        newNotepadMenuItem.addActionListener(_ -> mCurrentFile = mOperations.newFile(mFrame, mTextArea, mCurrentFile));
         newNotepadMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
 
         JMenuItem newCodeEditorMenuItem = new JMenuItem("New Code Editor");
         newCodeEditorMenuItem.addActionListener(_ -> mOperations.newCodeEditor());
 
         JMenuItem openMenuItem = new JMenuItem("Open");
-        openMenuItem.addActionListener(_ -> mOperations.openFile(mFrame, mTextArea, mFileChooser, mCurrentFile));
+        openMenuItem.addActionListener(_ -> mCurrentFile = mOperations.openFile(mFrame, mTextArea, mFileChooser, mCurrentFile));
         openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
 
         JMenuItem saveMenuItem = new JMenuItem("Save");
-        saveMenuItem.addActionListener(_ -> mOperations.saveFile(mFrame, mTextArea, mFileChooser, mCurrentFile));
+        saveMenuItem.addActionListener(_ -> mCurrentFile = mOperations.saveFile(mFrame, mTextArea, mFileChooser, mCurrentFile));
         saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
 
         JMenuItem saveAsMenuItem = new JMenuItem("Save As");
-        saveAsMenuItem.addActionListener(_ -> mOperations.saveAs(mFrame, mTextArea, mFileChooser, mCurrentFile));
+        saveAsMenuItem.addActionListener(_ -> mCurrentFile = mOperations.saveAs(mFrame, mTextArea, mFileChooser));
         saveAsMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
 
         JMenuItem exitMenuItem = new JMenuItem("Exit");
