@@ -12,6 +12,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.MouseAdapter;
@@ -101,6 +102,28 @@ public class FontMenu extends JDialog {
         FontMenu.this.dispose();
     }
 
+    private void refreshSelectedLabel(JPanel listPanel, JTextField selectedField) {
+        String selectedText = selectedField.getText();
+
+        for (Component comp : listPanel.getComponents()) {
+            if (!(comp instanceof JLabel label))
+                continue;
+
+            label.setOpaque(false);
+            label.setBackground(null);
+            label.setForeground(null);
+
+            if (label.getText().equals(selectedText)) {
+                label.setOpaque(true);
+                label.setBackground(mSelectedBlue);
+                label.setForeground(mBoneWhite);
+            }
+        }
+
+        listPanel.revalidate();
+        listPanel.repaint();
+    }
+
     private void addFontChooser() {
         JPanel fontPanel = new JPanel(new MigLayout("insets 0, fillx, wrap 1"));
 
@@ -133,6 +156,7 @@ public class FontMenu extends JDialog {
                 public void mouseClicked(MouseEvent e) {
                     // When clicked, set the mCurrentFontField to the font name
                     mCurrentFontField.setText(font);
+                    refreshSelectedLabel(listOfFontsPanel, mCurrentFontField);
                 }
 
                 @Override
@@ -146,8 +170,7 @@ public class FontMenu extends JDialog {
                 @Override
                 public void mouseExited(MouseEvent e) {
                     // Remove the highlight once the mouse stops hovering over the font names
-                    fontNameLabel.setBackground(null);
-                    fontNameLabel.setForeground(null);
+                    refreshSelectedLabel(listOfFontsPanel, mCurrentFontField);
                 }
             });
 
@@ -160,13 +183,12 @@ public class FontMenu extends JDialog {
     }
 
     private void addFontStyleChooser() {
-        // Will display the current font style and all available font styles
         JPanel fontStylePanel = new JPanel(new MigLayout("insets 0, fillx, wrap 1"));
 
         JLabel fontStyleLabel = new JLabel("Font Style:");
         add(fontStyleLabel, "cell 1 0");
 
-        // Get the current font style
+        // Current style -> text
         int currentFontStyle = mSource.getMTextArea().getFont().getStyle();
         String currentFontStyleText = switch (currentFontStyle) {
             case Font.PLAIN -> "Plain";
@@ -179,122 +201,50 @@ public class FontMenu extends JDialog {
         mCurrentFontStyleField.setEditable(false);
         fontStylePanel.add(mCurrentFontStyleField, "growx");
 
-        // Display the list of all font styles available
         JPanel listOfFontStylesPanel = new JPanel(new MigLayout("insets 0, wrap 1", "[grow, fill]"));
         listOfFontStylesPanel.setBackground(Color.WHITE);
 
-        // List of font styles:
-        // Plain
-        JLabel plainStyle = new JLabel("Plain");
-        plainStyle.setFont(new Font("Dialog", Font.PLAIN, 12));
-        plainStyle.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                // Update the current style field
-                mCurrentFontStyleField.setText(plainStyle.getText());
-            }
+        // (label text, awt font style)
+        Object[][] styles = {
+                {"Plain", Font.PLAIN},
+                {"Bold", Font.BOLD},
+                {"Italic", Font.ITALIC},
+                {"Bold Italic", Font.BOLD | Font.ITALIC}
+        };
 
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                // Add blue highlight when hovering
-                plainStyle.setOpaque(true);
-                plainStyle.setBackground(mSelectedBlue);
-                plainStyle.setForeground(mBoneWhite);
-            }
+        for (Object[] style : styles) {
+            String labelText = (String) style[0];
+            int awtStyle = (int) style[1];
 
-            @Override
-            public void mouseExited(MouseEvent e) {
-                // Remove highlights
-                plainStyle.setBackground(null);
-                plainStyle.setForeground(null);
-            }
-        });
+            JLabel styleLabel = new JLabel(labelText);
+            styleLabel.setFont(new Font("Dialog", awtStyle, 12));
 
-        listOfFontStylesPanel.add(plainStyle);
+            styleLabel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    mCurrentFontStyleField.setText(labelText);
+                    refreshSelectedLabel(listOfFontStylesPanel, mCurrentFontStyleField);
+                }
 
-        // Bold:
-        JLabel boldStyle = new JLabel("Bold");
-        boldStyle.setFont(new Font("Dialog", Font.BOLD, 12));
-        boldStyle.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                // Update the current style field
-                mCurrentFontStyleField.setText(boldStyle.getText());
-            }
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    styleLabel.setOpaque(true);
+                    styleLabel.setBackground(mSelectedBlue);
+                    styleLabel.setForeground(mBoneWhite);
+                }
 
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                // Add blue highlight when hovering
-                boldStyle.setOpaque(true);
-                boldStyle.setBackground(mSelectedBlue);
-                boldStyle.setForeground(mBoneWhite);
-            }
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    // restore whichever one is selected
+                    refreshSelectedLabel(listOfFontStylesPanel, mCurrentFontStyleField);
+                }
+            });
 
-            @Override
-            public void mouseExited(MouseEvent e) {
-                // Remove highlights
-                boldStyle.setBackground(null);
-                boldStyle.setForeground(null);
-            }
-        });
+            listOfFontStylesPanel.add(styleLabel);
+        }
 
-        listOfFontStylesPanel.add(boldStyle);
-
-        // Italic:
-        JLabel italicStyle = new JLabel("Italic");
-        italicStyle.setFont(new Font("Dialog", Font.ITALIC, 12));
-        italicStyle.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                // Update the current style field
-                mCurrentFontStyleField.setText(italicStyle.getText());
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                // Add blue highlight when hovering
-                italicStyle.setOpaque(true);
-                italicStyle.setBackground(mSelectedBlue);
-                italicStyle.setForeground(mBoneWhite);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                // Remove highlights
-                italicStyle.setBackground(null);
-                italicStyle.setForeground(null);
-            }
-        });
-
-        listOfFontStylesPanel.add(italicStyle);
-
-        // Bold Italic:
-        JLabel boldItalicStyle = new JLabel("Bold Italic");
-        boldItalicStyle.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
-        boldItalicStyle.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                // Update the current style field
-                mCurrentFontStyleField.setText(boldItalicStyle.getText());
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                // Add blue highlight when hovering
-                boldItalicStyle.setOpaque(true);
-                boldItalicStyle.setBackground(mSelectedBlue);
-                boldItalicStyle.setForeground(mBoneWhite);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                // Remove highlights
-                boldItalicStyle.setBackground(null);
-                boldItalicStyle.setForeground(null);
-            }
-        });
-
-        listOfFontStylesPanel.add(boldItalicStyle);
+        // Ensure the initial selection is highlighted
+        refreshSelectedLabel(listOfFontStylesPanel, mCurrentFontStyleField);
 
         JScrollPane scrollPane = new JScrollPane(listOfFontStylesPanel);
         fontStylePanel.add(scrollPane, "grow, pushy");
@@ -302,35 +252,32 @@ public class FontMenu extends JDialog {
     }
 
     private void addFontSizeChooser() {
-        // Display the current font size and list of font sizes to choose from
         JPanel fontSizePanel = new JPanel(new MigLayout("insets 0, fillx, wrap 1"));
 
-        JLabel fontSizeLabel = new JLabel("Font Size: ");
+        JLabel fontSizeLabel = new JLabel("Font Size:");
         add(fontSizeLabel, "cell 2 0");
 
-        mCurrentFontSizeField = new JTextField(
-                Integer.toString(mSource.getMTextArea().getFont().getSize())
-        );
+        mCurrentFontSizeField = new JTextField(Integer.toString(mSource.getMTextArea().getFont().getSize()));
         mCurrentFontSizeField.setEditable(false);
         fontSizePanel.add(mCurrentFontSizeField, "growx");
 
-        // Create list of font sizes to choose from
         JPanel listOfFontSizesPanel = new JPanel(new MigLayout("insets 0, wrap 1", "[grow, fill]"));
         listOfFontSizesPanel.setBackground(Color.WHITE);
 
-        // List of available font sizes will be from 8 -> 72 with increments of 2
         for (int i = 8; i <= 72; i += 2) {
-            JLabel fontSizeValueLabel = new JLabel(Integer.toString(i));
+            final int size = i;
+
+            JLabel fontSizeValueLabel = new JLabel(Integer.toString(size));
+
             fontSizeValueLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    // Update current font size field
-                    mCurrentFontSizeField.setText(fontSizeValueLabel.getText());
+                    mCurrentFontSizeField.setText(Integer.toString(size));
+                    refreshSelectedLabel(listOfFontSizesPanel, mCurrentFontSizeField);
                 }
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    // Add blue highlights
                     fontSizeValueLabel.setOpaque(true);
                     fontSizeValueLabel.setBackground(mSelectedBlue);
                     fontSizeValueLabel.setForeground(mBoneWhite);
@@ -338,14 +285,14 @@ public class FontMenu extends JDialog {
 
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    // Remove highlights
-                    fontSizeValueLabel.setBackground(null);
-                    fontSizeValueLabel.setForeground(null);
+                    refreshSelectedLabel(listOfFontSizesPanel, mCurrentFontSizeField);
                 }
             });
 
             listOfFontSizesPanel.add(fontSizeValueLabel);
         }
+
+        refreshSelectedLabel(listOfFontSizesPanel, mCurrentFontSizeField);
 
         JScrollPane scrollPane = new JScrollPane(listOfFontSizesPanel);
         fontSizePanel.add(scrollPane, "grow, pushy");
