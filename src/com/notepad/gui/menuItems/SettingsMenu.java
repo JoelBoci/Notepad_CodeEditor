@@ -1,24 +1,16 @@
 package com.notepad.gui.menuItems;
 
+import com.notepad.config.AppConfig;
+
+
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
-import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatLightLaf;
-import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.themes.FlatMacDarkLaf;
-import com.formdev.flatlaf.themes.FlatMacLightLaf;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.notepad.config.ThemeManager;
 
 public class SettingsMenu extends JMenu {
-
-    private static final Logger mLogger = LoggerFactory.getLogger(SettingsMenu.class);
-
     private final JFrame mFrame;
 
     public SettingsMenu(JFrame frame) {
@@ -31,19 +23,19 @@ public class SettingsMenu extends JMenu {
         JMenu themeMenu = new JMenu("Themes");
 
         JMenuItem lightModeMenuItem = new JMenuItem("Light");
-        lightModeMenuItem.addActionListener(_ -> setLightMode());
+        lightModeMenuItem.addActionListener(_ -> applyTheme("light"));
 
         JMenuItem darkModeMenuItem = new JMenuItem("Dark");
-        darkModeMenuItem.addActionListener(_ -> setDarkMode());
+        darkModeMenuItem.addActionListener(_ -> applyTheme("dark"));
 
         JMenuItem darculaModeMenuItem = new JMenuItem("Darcula");
-        darculaModeMenuItem.addActionListener(_ -> setDarculaMode());
+        darculaModeMenuItem.addActionListener(_ -> applyTheme("darcula"));
 
         JMenuItem macLightModeMenuItem = new JMenuItem("Mac Light");
-        macLightModeMenuItem.addActionListener(_ -> setMacLightMode());
+        macLightModeMenuItem.addActionListener(_ -> applyTheme("macLight"));
 
         JMenuItem macDarkModeMenuItem = new JMenuItem("Mac Dark");
-        macDarkModeMenuItem.addActionListener(_ -> setMacDarkMode());
+        macDarkModeMenuItem.addActionListener(_ -> applyTheme("macDark"));
 
         themeMenu.add(lightModeMenuItem);
         themeMenu.add(darkModeMenuItem);
@@ -53,48 +45,9 @@ public class SettingsMenu extends JMenu {
         add(themeMenu);
     }
 
-    private void setLightMode() {
-        try {
-            UIManager.setLookAndFeel(new FlatLightLaf());
-            SwingUtilities.updateComponentTreeUI(mFrame);
-        } catch (Exception e) {
-            mLogger.error("Couldn't set light mode: {}", e.getMessage(), e);
-        }
-    }
-
-    private void setDarkMode() {
-        try {
-            UIManager.setLookAndFeel(new FlatDarkLaf());
-            SwingUtilities.updateComponentTreeUI(mFrame);
-        } catch (Exception e) {
-            mLogger.error("Couldn't set dark mode: {}", e.getMessage(), e);
-        }
-    }
-
-    private void setDarculaMode() {
-        try {
-            UIManager.setLookAndFeel(new FlatDarculaLaf());
-            SwingUtilities.updateComponentTreeUI(mFrame);
-        } catch (Exception e) {
-            mLogger.error("Couldn't set darcula mode: {}", e.getMessage(), e);
-        }
-    }
-
-    private void setMacLightMode() {
-        try {
-            UIManager.setLookAndFeel(new FlatMacLightLaf());
-            SwingUtilities.updateComponentTreeUI(mFrame);
-        } catch (Exception e) {
-            mLogger.error("Couldn't set mac light mode: {}", e.getMessage(), e);
-        }
-    }
-
-    private void setMacDarkMode() {
-        try {
-            UIManager.setLookAndFeel(new FlatMacDarkLaf());
-            SwingUtilities.updateComponentTreeUI(mFrame);
-        } catch (Exception e) {
-            mLogger.error("Couldn't set mac dark mode: {}", e.getMessage(), e);
-        }
+    private void applyTheme(String theme) {
+        ThemeManager.apply(theme);
+        AppConfig.setTheme(theme);
+        SwingUtilities.updateComponentTreeUI(mFrame);
     }
 }

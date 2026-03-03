@@ -1,5 +1,7 @@
 package com.notepad.main;
 
+import com.notepad.config.AppConfig;
+import com.notepad.config.ThemeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +13,10 @@ public class Main {
 
     public static void main(String[] args) {
         mLogger.info("Starting Notepad...");
-        SwingUtilities.invokeLater(Notepad::new);
+        System.out.println("Loaded theme on startup = " + AppConfig.getTheme());
+        SwingUtilities.invokeLater(() -> {
+            ThemeManager.apply(AppConfig.getTheme());
+            new Notepad();
+        });
     }
 }

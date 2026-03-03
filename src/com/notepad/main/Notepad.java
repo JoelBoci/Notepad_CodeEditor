@@ -11,8 +11,6 @@ import java.awt.Font;
 import java.awt.Image;
 import java.util.Objects;
 
-import com.formdev.flatlaf.FlatLightLaf;
-
 import com.notepad.gui.menuItems.EditMenu;
 import com.notepad.gui.menuItems.FileMenu;
 import com.notepad.gui.menuItems.FormatMenu;
@@ -35,8 +33,6 @@ public class Notepad {
     private int mZoomPercent = 100;
 
     public Notepad() {
-        setDefaultMode();
-
         setGlobalFont(new Font("Arial", Font.PLAIN, 14));
 
         ImageIcon imageIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/notepad.png")));
@@ -104,14 +100,5 @@ public class Notepad {
                 UIManager.put(key, font);
             }
         });
-    }
-
-    private void setDefaultMode() {
-        try {
-            mLogger.info("Setting default look and feel...");
-            UIManager.setLookAndFeel(new FlatLightLaf());
-        } catch (Exception e) {
-            mLogger.error("Couldn't set default mode: {}", e.getMessage(), e);
-        }
     }
 }
