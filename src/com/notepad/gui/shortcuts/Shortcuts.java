@@ -26,6 +26,7 @@ public class Shortcuts {
                     {"Find & Replace", "Ctrl + H"},
                     {"Zoom In", "Ctrl + ="},
                     {"Zoom Out", "Ctrl + -"},
+                    {"Distraction-Free Mode", "F11"}
             };
 
             // Column headers for the table
