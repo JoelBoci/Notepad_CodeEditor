@@ -17,6 +17,7 @@ import com.notepad.gui.menuItems.FormatMenu;
 import com.notepad.gui.menuItems.SettingsMenu;
 import com.notepad.gui.menuItems.ShortcutMenu;
 import com.notepad.gui.menuItems.ViewMenu;
+import com.notepad.gui.menuItems.OtherMenu;
 
 import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
@@ -75,6 +76,7 @@ public class Notepad {
         ViewMenu viewMenu = new ViewMenu(mTextArea, this::onZoomChanged);
         SettingsMenu settingsMenu = new SettingsMenu(mFrame);
         ShortcutMenu shortcutMenu = new ShortcutMenu();
+        OtherMenu otherMenu = new OtherMenu(mFrame, mStatusBar, mTextArea);
 
         // Add menus to the menu bar
         menuBar.add(fileMenu);
@@ -83,6 +85,7 @@ public class Notepad {
         menuBar.add(viewMenu);
         menuBar.add(settingsMenu);
         menuBar.add(shortcutMenu);
+        menuBar.add(otherMenu);
 
         // Set the menu bar on the frame
         mFrame.setJMenuBar(menuBar);
