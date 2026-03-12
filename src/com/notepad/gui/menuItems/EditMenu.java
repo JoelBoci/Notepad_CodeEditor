@@ -59,7 +59,7 @@ public class EditMenu extends JMenu {
 
         JMenuItem redoMenuItem = new JMenuItem("Redo");
         redoMenuItem.addActionListener(_ -> mOperations.redo(mUndoManager));
-        redoMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK));
+        redoMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK));
 
         JMenuItem findMenuItem = new JMenuItem("Find");
         findMenuItem.addActionListener(_ -> showFindDialog());
@@ -67,7 +67,7 @@ public class EditMenu extends JMenu {
 
         JMenuItem findAndReplaceMenuItem = new JMenuItem("Find & Replace");
         findAndReplaceMenuItem.addActionListener(_ -> showFindAndReplaceDialog());
-        findAndReplaceMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, KeyEvent.CTRL_DOWN_MASK));
+        findAndReplaceMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK));
 
         add(cutMenuItem);
         add(copyMenuItem);
