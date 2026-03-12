@@ -21,9 +21,9 @@ public class Shortcuts {
                     {"Copy", "Ctrl + C"},
                     {"Paste", "Ctrl + V"},
                     {"Undo", "Ctrl + Z"},
-                    {"Redo", "Ctrl + R"},
+                    {"Redo", "Ctrl + Y"},
                     {"Find", "Ctrl + F"},
-                    {"Find & Replace", "Ctrl + H"},
+                    {"Find & Replace", "Ctrl + R"},
                     {"Zoom In", "Ctrl + ="},
                     {"Zoom Out", "Ctrl + -"},
                     {"Distraction-Free Mode", "F11"}
@@ -34,7 +34,7 @@ public class Shortcuts {
 
             // Create a JTable with the shortcuts data
             JTable shortcutsTable = new JTable(shortcutData, columnNames);
-            shortcutsTable.setEnabled(false);  // Make table read-only
+            shortcutsTable.setEnabled(false);
             shortcutsTable.setPreferredScrollableViewportSize(new Dimension(400, 300));
 
             // Wrap the table in a JScrollPane for better UI
