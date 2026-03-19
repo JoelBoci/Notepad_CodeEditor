@@ -8,20 +8,17 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.undo.UndoManager;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.notepad.main.Notepad;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 
-import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -29,9 +26,14 @@ import java.nio.file.Path;
 
 public class Operations {
 
+    private static final FileNameExtensionFilter OPEN_FILE_FILTER =
+            new FileNameExtensionFilter("BOC and Text Files (*.boc, *.txt)", "boc", "txt");
+
+    private static final FileNameExtensionFilter SAVE_FILE_FILTER =
+            new FileNameExtensionFilter("BOC Files (*.boc)", "boc");
+
     private static final Logger mLogger = LoggerFactory.getLogger(Operations.class);
 
-    // File Operations
     public File newFile(JFrame frame, JTextArea textArea, File currentFile) {
         String[] options = {"New Window", "This Window", "Cancel"};
 
@@ -43,23 +45,25 @@ public class Operations {
             case 0 -> {
                 SwingUtilities.invokeLater(Notepad::new);
                 mLogger.info("New file created in new window");
-                return currentFile; // current window unchanged
+                return currentFile;
             }
             case 1 -> {
-                frame.setTitle("Notepad");
+                frame.setTitle("Untitled - Notepad");
                 textArea.setText("");
+                textArea.putClientProperty("encoding", StandardCharsets.UTF_8.displayName());
+                textArea.putClientProperty("eol", "LF");
                 mLogger.info("New file created in current window");
-                return null; // reset tracked file
+                return null;
             }
             default -> {
                 mLogger.info("New file operation cancelled");
-                return currentFile; // no change
+                return currentFile;
             }
         }
     }
 
     public void exit(JFrame frame) {
-        mLogger.info("Quiting notepad...");
+        mLogger.info("Quitting notepad...");
         frame.dispose();
     }
 
@@ -69,46 +73,29 @@ public class Operations {
     }
 
     public File openFile(JFrame frame, JTextArea textArea, JFileChooser fileChooser, File currentFile) {
-        int option = fileChooser.showOpenDialog(frame);
-        if (option != JFileChooser.APPROVE_OPTION)
+        fileChooser.setFileFilter(OPEN_FILE_FILTER);
+
+        if (fileChooser.showOpenDialog(frame) != JFileChooser.APPROVE_OPTION)
             return currentFile;
 
         try {
-            // Get the selected file
             File selectedFile = fileChooser.getSelectedFile();
-
-            mLogger.info("Attempting to open file '{}'", selectedFile);
-
-            // Update the current file
-            currentFile = selectedFile;
-
-            // Update the title header
-            frame.setTitle(selectedFile.getName());
-
-            // Read the file and store the text
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(selectedFile));
-            StringBuilder fileText = new StringBuilder();
-            String readText;
-
-            while ((readText = bufferedReader.readLine()) != null)
-                fileText.append(readText).append("\n");
-
-            // Update text area GUI
-            textArea.setText(fileText.toString());
+            mLogger.info("Attempting to open file '{}'", selectedFile.getName());
 
             Path path = selectedFile.toPath();
             Charset charset = sniffCharset(path);
-            byte[] bytes = Files.readAllBytes(path);
-            String text = new String(bytes, charset);
+
+            String text = Files.readString(path, charset);
             if (!text.isEmpty() && text.charAt(0) == '\uFEFF')
                 text = text.substring(1);
 
-            String eol = sniffEol(text);
             textArea.putClientProperty("encoding", charset.displayName());
-            textArea.putClientProperty("eol", eol);
+            textArea.putClientProperty("eol", sniffEol(text));
             textArea.setText(text);
 
-            mLogger.info("Opened file: '{}'", selectedFile);
+            frame.setTitle(selectedFile.getName());
+
+            mLogger.info("Opened file: '{}'", selectedFile.getName());
             return selectedFile;
         } catch (IOException e) {
             mLogger.error("Error opening file: {}", e.getMessage(), e);
@@ -118,26 +105,19 @@ public class Operations {
     }
 
     public File saveFile(JFrame frame, JTextArea textArea, JFileChooser fileChooser, File currentFile) {
-        File targetFile = currentFile;
-
-        // If null -> Save As
-        if (targetFile == null) {
-            targetFile = saveAs(frame, textArea, fileChooser);
-            if (targetFile == null)
-                return null;
-        }
+        if (currentFile == null)
+            return saveAs(frame, textArea, fileChooser);
 
         try {
-            // Write to the current file
-            mLogger.info("Attempting to save file...");
-            try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetFile), StandardCharsets.UTF_8))) {
-                bufferedWriter.write(textArea.getText());
-            }
+            mLogger.info("Attempting to save file '{}'...", currentFile.getName());
+
+            writeTextToFile(currentFile, textArea.getText());
 
             textArea.putClientProperty("encoding", StandardCharsets.UTF_8.displayName());
-            mLogger.info("File successfully saved :)");
+            frame.setTitle(currentFile.getName());
+            mLogger.info("File '{}' successfully saved :)", currentFile.getName());
 
-            return targetFile;
+            return currentFile;
         } catch (IOException e) {
             mLogger.error("Error saving file: {}", e.getMessage(), e);
             JOptionPane.showMessageDialog(frame, "Error saving file: " + e.getMessage());
@@ -145,48 +125,35 @@ public class Operations {
         }
     }
 
-    // the saveAs method creates a new text file and saves user text
     public File saveAs(JFrame frame, JTextArea textArea, JFileChooser fileChooser) {
-        int option = fileChooser.showSaveDialog(frame);
+        fileChooser.setSelectedFile(null);
+        fileChooser.setFileFilter(SAVE_FILE_FILTER);
 
-        if (option != JFileChooser.APPROVE_OPTION)
+        if (fileChooser.showSaveDialog(frame) != JFileChooser.APPROVE_OPTION)
             return null;
 
         try {
-            File selectedFile = fileChooser.getSelectedFile();
-
-            // Need to append .txt to the file if it does not have the txt extension yet
+            File selectedFile = ensureBocExtension(fileChooser.getSelectedFile());
             String fileName = selectedFile.getName();
+
             mLogger.info("Attempting to save file '{}'", fileName);
-            if (!fileName.substring(fileName.length() - 4).equalsIgnoreCase(".txt"))
-                selectedFile = new File(selectedFile.getAbsoluteFile() + ".txt");
 
-            // Create new file
-            selectedFile.createNewFile();
-
-            // Write the user's text into the file we just created
-            try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(selectedFile), StandardCharsets.UTF_8))) {
-                bufferedWriter.write(textArea.getText());
-            }
+            writeTextToFile(selectedFile, textArea.getText());
 
             textArea.putClientProperty("encoding", StandardCharsets.UTF_8.displayName());
-
-            // Update the title header of the GUI to the saved text file name
             frame.setTitle(fileName);
 
-            // Show display dialog
             JOptionPane.showMessageDialog(frame, "Saved file " + fileName);
             mLogger.info("'{}' has been saved :)", fileName);
 
             return selectedFile;
-        } catch (Exception e) {
+        } catch (IOException e) {
             mLogger.error("Error saving file as: {}", e.getMessage(), e);
             JOptionPane.showMessageDialog(frame, "Error saving file: " + e.getMessage());
             return null;
         }
     }
 
-    // Text operations
     public void cut(JTextArea textArea) {
         textArea.cut();
     }
@@ -214,21 +181,40 @@ public class Operations {
             byte[] bom = new byte[3];
             int n = in.read(bom);
 
-            if (n >= 3 && (bom[0] & 0xFF) == 0xEF && (bom[1] & 0xFF) == 0xBB && (bom[2] & 0xFF) == 0xBF) {
+            if (n >= 3 && (bom[0] & 0xFF) == 0xEF && (bom[1] & 0xFF) == 0xBB && (bom[2] & 0xFF) == 0xBF)
                 return StandardCharsets.UTF_8;
-            }
 
             if (n >= 2) {
-                if ((bom[0] & 0xFF) == 0xFF && (bom[1] & 0xFF) == 0xFE) return StandardCharsets.UTF_16LE;
-                if ((bom[0] & 0xFF) == 0xFE && (bom[1] & 0xFF) == 0xFF) return StandardCharsets.UTF_16BE;
+                if ((bom[0] & 0xFF) == 0xFF && (bom[1] & 0xFF) == 0xFE)
+                    return StandardCharsets.UTF_16LE;
+
+                if ((bom[0] & 0xFF) == 0xFE && (bom[1] & 0xFF) == 0xFF)
+                    return StandardCharsets.UTF_16BE;
             }
         }
         return StandardCharsets.UTF_8;
     }
 
     private static String sniffEol(String text) {
-        if (text.contains("\r\n")) return "CRLF";
-        if (text.contains("\r"))   return "CR";
+        if (text.contains("\r\n"))
+            return "CRLF";
+
+        if (text.contains("\r"))
+            return "CR";
+
         return "LF";
+    }
+
+    private static void writeTextToFile(File file, String text) throws IOException {
+        try (BufferedWriter writer = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)) {
+            writer.write(text);
+        }
+    }
+
+    private static File ensureBocExtension(File file) {
+        if (!file.getName().toLowerCase(java.util.Locale.ROOT).endsWith(".boc"))
+            return new File(file.getAbsolutePath() + ".boc");
+
+        return file;
     }
 }
