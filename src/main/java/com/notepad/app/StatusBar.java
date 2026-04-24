@@ -1,4 +1,4 @@
-package com.notepad.main;
+package com.notepad.app;
 
 import net.miginfocom.swing.MigLayout;
 

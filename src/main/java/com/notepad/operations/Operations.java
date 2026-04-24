@@ -10,7 +10,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.undo.UndoManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import com.notepad.main.Notepad;
+import com.notepad.app.Notepad;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

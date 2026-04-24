@@ -1,4 +1,4 @@
-package com.notepad.main;
+package com.notepad.app;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
