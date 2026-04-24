@@ -1,6 +1,6 @@
 package com.notepad.gui.menuItems;
 
-import com.notepad.main.StatusBar;
+import com.notepad.app.StatusBar;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;

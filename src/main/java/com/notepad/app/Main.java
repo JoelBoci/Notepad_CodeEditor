@@ -1,4 +1,4 @@
-package com.notepad.main;
+package com.notepad.app;
 
 import com.notepad.config.AppConfig;
 import com.notepad.config.ThemeManager;

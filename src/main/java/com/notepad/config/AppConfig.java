@@ -1,6 +1,6 @@
 package com.notepad.config;
 
-import com.notepad.main.Notepad;
+import com.notepad.app.Notepad;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
