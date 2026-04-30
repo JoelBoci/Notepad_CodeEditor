@@ -1,5 +1,6 @@
 package com.notepad.gui.menuItems;
 
+import lombok.Getter;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.BorderFactory;
@@ -28,10 +29,14 @@ public class FontMenu extends JDialog {
     // Will need a reference to our GUI to make changes to the GUI from this class
     private final FormatMenu mSource;
 
+    @Getter
     private JTextField mCurrentFontField;
+    @Getter
     private JTextField mCurrentFontStyleField;
+    @Getter
     private JTextField mCurrentFontSizeField;
 
+    @Getter
     private JPanel mCurrentColourBox;
 
     private static final Logger mLogger = LoggerFactory.getLogger(FontMenu.class);

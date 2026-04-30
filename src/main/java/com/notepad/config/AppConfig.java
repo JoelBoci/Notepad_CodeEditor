@@ -1,6 +1,5 @@
 package com.notepad.config;
 
-import com.notepad.app.Notepad;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +9,7 @@ import java.util.prefs.Preferences;
 
 public final class AppConfig {
     private static final Preferences PREFS = Preferences.userRoot().node("com/notepad"); // use a path style
-    private static final Logger mLogger = LoggerFactory.getLogger(Notepad.class);
+    private static final Logger mLogger = LoggerFactory.getLogger(AppConfig.class);
 
     private AppConfig() {}
 

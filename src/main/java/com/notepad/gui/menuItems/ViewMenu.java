@@ -49,7 +49,7 @@ public class ViewMenu extends JMenu {
     }
 
     private void applyZoom(int newPercent) {
-        newPercent = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newPercent));
+        newPercent = Math.clamp(newPercent, MIN_ZOOM, MAX_ZOOM);
         if (newPercent == mZoomPercent) {
             updateMenuItemStates();
             return;

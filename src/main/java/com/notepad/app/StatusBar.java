@@ -1,5 +1,7 @@
 package com.notepad.app;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.BorderFactory;
@@ -11,6 +13,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 
+@Getter
 public class StatusBar extends JPanel {
     private final JLabel mCaretLabel = new JLabel("Ln 1, Col 1");
     private final JLabel mCountLabel = new JLabel("Words: 0  Chars: 0");
@@ -18,6 +21,7 @@ public class StatusBar extends JPanel {
     private final JLabel mEncLabel   = new JLabel("UTF-8");
     private final JLabel mEolLabel   = new JLabel("LF");
 
+    @Getter(AccessLevel.NONE)
     private JTextComponent mEditor;
 
     public StatusBar() {

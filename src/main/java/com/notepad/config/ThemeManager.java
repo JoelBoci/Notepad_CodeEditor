@@ -10,6 +10,11 @@ public final class ThemeManager {
     private ThemeManager() {}
 
     public static void apply(String themeKey) {
+        if (themeKey == null) {
+            FlatLightLaf.setup();
+            return;
+        }
+
         switch (themeKey) {
             case "light" -> FlatLightLaf.setup();
             case "dark" -> FlatDarkLaf.setup();

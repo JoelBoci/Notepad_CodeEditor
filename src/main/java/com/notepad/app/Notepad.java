@@ -19,18 +19,23 @@ import com.notepad.gui.menuItems.ShortcutMenu;
 import com.notepad.gui.menuItems.ViewMenu;
 import com.notepad.gui.menuItems.OtherMenu;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Getter
 public class Notepad {
 
+    @Getter(AccessLevel.NONE)
     private static final Logger mLogger = LoggerFactory.getLogger(Notepad.class);
 
     private final JFrame mFrame;
     private final JTextArea mTextArea;
     private final StatusBar mStatusBar;
 
+    @Getter(AccessLevel.NONE)
     private int mZoomPercent = 100;
 
     public Notepad() {
