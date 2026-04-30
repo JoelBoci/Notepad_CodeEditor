@@ -41,6 +41,10 @@ public class Operations {
                 "Select One:", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
                 null, options, options[0]);
 
+        return handleNewFileOption(frame, textArea, currentFile, option);
+    }
+
+    File handleNewFileOption(JFrame frame, JTextArea textArea, File currentFile, int option) {
         switch (option) {
             case 0 -> {
                 SwingUtilities.invokeLater(Notepad::new);
