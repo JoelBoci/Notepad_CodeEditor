@@ -181,8 +181,8 @@ public class OperationsTest {
         private final int mResult;
 
         TestFileChooser(File selectedFile, int result) {
-            this.mSelectedFile = selectedFile;
-            this.mResult = result;
+            mSelectedFile = selectedFile;
+            mResult = result;
         }
 
         @Override

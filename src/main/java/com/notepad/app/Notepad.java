@@ -35,6 +35,8 @@ public class Notepad {
     private final JTextArea mTextArea;
     private final StatusBar mStatusBar;
 
+    private final JScrollPane mTextScrollPane;
+
     @Getter(AccessLevel.NONE)
     private int mZoomPercent = 100;
 
@@ -51,7 +53,7 @@ public class Notepad {
         mTextArea.setLineWrap(true);
         mTextArea.setWrapStyleWord(true);
 
-        JScrollPane scrollPane = new JScrollPane(mTextArea);
+        mTextScrollPane = new JScrollPane(mTextArea);
 
         mStatusBar = new StatusBar();
         mStatusBar.bindToEditor(mTextArea);
@@ -61,7 +63,7 @@ public class Notepad {
 
         createMenuBar();
 
-        mFrame.add(scrollPane, "cell 0 0, grow, push");
+        mFrame.add(mTextScrollPane, "cell 0 0, grow, push");
         mFrame.add(mStatusBar,  "cell 0 1, growx");
         mFrame.setSize(800, 600);
         mFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -79,9 +81,9 @@ public class Notepad {
         EditMenu editMenu = new EditMenu(mFrame, mTextArea);
         FormatMenu formatMenu = new FormatMenu(mTextArea);
         ViewMenu viewMenu = new ViewMenu(mTextArea, this::onZoomChanged);
-        SettingsMenu settingsMenu = new SettingsMenu(mFrame);
         ShortcutMenu shortcutMenu = new ShortcutMenu();
-        OtherMenu otherMenu = new OtherMenu(mFrame, mStatusBar, mTextArea);
+        OtherMenu otherMenu = new OtherMenu(mFrame, mStatusBar, mTextArea, mTextScrollPane);
+        SettingsMenu settingsMenu = new SettingsMenu(mFrame, otherMenu);
 
         // Add menus to the menu bar
         menuBar.add(fileMenu);
@@ -97,16 +99,15 @@ public class Notepad {
     }
 
     private void onZoomChanged(int newZoomPercent) {
-        this.mZoomPercent = newZoomPercent;
+        mZoomPercent = newZoomPercent;
         mStatusBar.setZoomPercent(newZoomPercent);
     }
 
     private void setGlobalFont(Font font) {
         mLogger.info("Setting global fonts...");
         UIManager.getLookAndFeelDefaults().keys().asIterator().forEachRemaining(key -> {
-            if (UIManager.get(key) instanceof Font) {
+            if (UIManager.get(key) instanceof Font)
                 UIManager.put(key, font);
-            }
         });
     }
 }

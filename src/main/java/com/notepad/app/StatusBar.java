@@ -17,9 +17,9 @@ import javax.swing.text.JTextComponent;
 public class StatusBar extends JPanel {
     private final JLabel mCaretLabel = new JLabel("Ln 1, Col 1");
     private final JLabel mCountLabel = new JLabel("Words: 0  Chars: 0");
-    private final JLabel mZoomLabel  = new JLabel("Zoom: 100%");
-    private final JLabel mEncLabel   = new JLabel("UTF-8");
-    private final JLabel mEolLabel   = new JLabel("LF");
+    private final JLabel mZoomLabel = new JLabel("Zoom: 100%");
+    private final JLabel mEncLabel = new JLabel("UTF-8");
+    private final JLabel mEolLabel = new JLabel("LF");
 
     @Getter(AccessLevel.NONE)
     private JTextComponent mEditor;
@@ -36,8 +36,8 @@ public class StatusBar extends JPanel {
         add(mZoomLabel,  "alignx right");
     }
 
-    public void bindToEditor(JTextComponent mEditor) {
-        this.mEditor = mEditor;
+    public void bindToEditor(JTextComponent editor) {
+        mEditor = editor;
 
         mEditor.addCaretListener(_ -> updateAll());
         mEditor.getDocument().addDocumentListener(new DocumentListener() {
@@ -77,12 +77,10 @@ public class StatusBar extends JPanel {
         int words = text.isBlank() ? 0 : text.trim().split("\\s+").length;
         mCountLabel.setText("Words: " + words + "  Chars: " + chars);
 
-        Object encProp = mEditor.getClientProperty("encoding");
-        if (encProp instanceof String s && !s.isBlank())
+        if (mEditor.getClientProperty("encoding") instanceof String s && !s.isBlank())
             mEncLabel.setText(s);
 
-        Object eolProp = mEditor.getClientProperty("eol");
-        if (eolProp instanceof String s2 && !s2.isBlank())
+        if (mEditor.getClientProperty("eol") instanceof String s2 && !s2.isBlank())
             mEolLabel.setText(s2);
     }
 }
