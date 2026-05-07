@@ -25,13 +25,13 @@ public class FileMenu extends JMenu {
 
     public FileMenu(JFrame frame, JTextArea textArea) {
         super("File");
-        this.mFrame = frame;
-        this.mTextArea = textArea;
-        this.mFileChooser = new JFileChooser();
+        mFrame = frame;
+        mTextArea = textArea;
+        mFileChooser = new JFileChooser();
         mOperations = new Operations();
 
-        this.mFileChooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
-        this.mFileChooser.setCurrentDirectory(new File("src/assets"));
+        mFileChooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+        mFileChooser.setCurrentDirectory(new File("src/assets"));
 
         createFileMenu();
     }

@@ -27,9 +27,9 @@ public class ViewMenu extends JMenu {
 
     public ViewMenu(JTextArea textArea, IntConsumer onZoomChanged) {
         super("View");
-        this.mTextArea = textArea;
-        this.mOnZoomChanged = onZoomChanged;
-        this.mBaseFont = textArea.getFont();
+        mTextArea = textArea;
+        mOnZoomChanged = onZoomChanged;
+        mBaseFont = textArea.getFont();
         createViewMenu();
         applyZoom(DEFAULT_ZOOM);
     }

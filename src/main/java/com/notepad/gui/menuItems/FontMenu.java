@@ -41,12 +41,12 @@ public class FontMenu extends JDialog {
 
     private static final Logger mLogger = LoggerFactory.getLogger(FontMenu.class);
 
-    public FontMenu(FormatMenu mSource) {
-        this.mSource = mSource;
+    public FontMenu(FormatMenu source) {
+        mSource = source;
         setTitle("Font Settings");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(650, 350);
-        setLocationRelativeTo(mSource); // Launch menu at center of notepad GUI
+        setLocationRelativeTo(mSource); // Launch menu at centre of notepad GUI
         setResizable(false);
         setModal(true);
 

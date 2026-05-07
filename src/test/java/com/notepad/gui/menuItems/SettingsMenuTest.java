@@ -1,14 +1,12 @@
 package com.notepad.gui.menuItems;
 
+import com.notepad.app.StatusBar;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -18,12 +16,20 @@ public class SettingsMenuTest {
     private JTextArea mTextArea;
     private SettingsMenu mSettingsMenu;
 
+    private OtherMenu mOtherMenu;
+    private StatusBar mStatusBar;
+    private JScrollPane mScrollPane;
+
     @BeforeEach
     void setUp() throws Exception {
         SwingUtilities.invokeAndWait(() -> {
             mFrame = new JFrame();
             mTextArea = new JTextArea();
-            mSettingsMenu = new SettingsMenu(mFrame);
+
+            mStatusBar = new StatusBar();
+            mScrollPane = new JScrollPane();
+            mOtherMenu = new OtherMenu(mFrame, mStatusBar, mTextArea, mScrollPane);
+            mSettingsMenu = new SettingsMenu(mFrame, mOtherMenu);
 
             mFrame.add(mTextArea);
             mFrame.pack();

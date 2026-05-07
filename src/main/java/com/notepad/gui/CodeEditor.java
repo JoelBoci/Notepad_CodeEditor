@@ -81,13 +81,12 @@ public class CodeEditor {
         showLanguageSelectionDialog();
 
         mFrame.setJMenuBar(createMenuBar());
-
         mFrame.setSize(800, 600);
         mFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        this.mFileChooser = new JFileChooser();
-        this.mFileChooser.setFileFilter(new FileNameExtensionFilter("Java File", "java"));
-        this.mFileChooser.setCurrentDirectory(new File("src/codesnippets"));
+        mFileChooser = new JFileChooser();
+        mFileChooser.setFileFilter(new FileNameExtensionFilter("Java File", "java"));
+        mFileChooser.setCurrentDirectory(new File("src/codesnippets"));
 
         mUndoManager = new UndoManager();
         mCodeArea.getDocument().addUndoableEditListener(e -> mUndoManager.addEdit(e.getEdit()));
@@ -225,7 +224,6 @@ public class CodeEditor {
                 case "Python" -> runScript(detectPythonCommand(), ".py");
                 case "JavaScript" -> runScript("node", ".js");
                 default -> JOptionPane.showMessageDialog(mFrame, "Run not supported for " + mSelectedLanguage + " yet.");
-
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(mFrame, "Run error: " + e.getMessage());
@@ -273,8 +271,7 @@ public class CodeEditor {
     private String detectPythonCommand() {
         // Windows often uses "py" launcher, mac/linux often use python3
         // Will be configurable soon
-        String os = System.getProperty("os.name").toLowerCase();
-        return os.contains("win") ? "py" : "python3";
+        return System.getProperty("os.name").toLowerCase().contains("win") ? "py" : "python3";
     }
 
     // Method to compile the code
@@ -336,7 +333,6 @@ public class CodeEditor {
                 JOptionPane.showMessageDialog(mFrame, "Compilation failed.");
                 mLogger.error("Compilation failed (exit code {})", result);
             }
-
         } catch (IOException e) {
             mLogger.error("Error while compiling code.", e);
             JOptionPane.showMessageDialog(mFrame, "Error during compilation: " + e.getMessage());
@@ -376,9 +372,8 @@ public class CodeEditor {
         String[] lines = code.split("\n");
         for (String line : lines) {
             line = line.trim();
-            if (line.startsWith("package ")) {
+            if (line.startsWith("package "))
                 return line.substring("package ".length(), line.length() - 1).trim();
-            }
         }
         return ""; // No package name found
     }

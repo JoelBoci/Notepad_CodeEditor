@@ -14,7 +14,7 @@ public class FormatMenu extends JMenu {
 
     public FormatMenu(JTextArea textArea) {
         super("Format");
-        this.mTextArea = textArea;
+        mTextArea = textArea;
         createFormatMenu();
     }
 

@@ -38,8 +38,8 @@ public class EditMenu extends JMenu {
 
     public EditMenu(JFrame frame, JTextArea textArea) {
         super("Edit");
-        this.mFrame = frame;
-        this.mTextArea = textArea;
+        mFrame = frame;
+        mTextArea = textArea;
 
         mOperations = new Operations();
         mUndoManager = new UndoManager();
@@ -109,7 +109,7 @@ public class EditMenu extends JMenu {
         findDialog.add(findField, "pushx, growx, wrap");
         findDialog.add(caseSensitiveCheckbox, "split 2");
         findDialog.add(regexCheckbox, "wrap");
-        findDialog.add(findButton);
+        findDialog.add(findButton, "right");
 
         findDialog.pack();
         findDialog.setVisible(true);

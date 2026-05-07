@@ -11,11 +11,15 @@ import javax.swing.SwingUtilities;
 import com.notepad.config.ThemeManager;
 
 public class SettingsMenu extends JMenu {
-    private final JFrame mFrame;
 
-    public SettingsMenu(JFrame frame) {
+    private final JFrame mFrame;
+    private final OtherMenu mOtherMenu;
+
+
+    public SettingsMenu(JFrame frame, OtherMenu otherMenu) {
         super("Settings");
-        this.mFrame = frame;
+        mFrame = frame;
+        mOtherMenu = otherMenu;
         addSettingsMenu();
     }
 
@@ -48,6 +52,7 @@ public class SettingsMenu extends JMenu {
     private void applyTheme(String theme) {
         ThemeManager.apply(theme);
         AppConfig.setTheme(theme);
+        mOtherMenu.refreshMarkdownPreview();
         SwingUtilities.updateComponentTreeUI(mFrame);
     }
 }
