@@ -13,24 +13,29 @@ This project started in late 2024 as a simple notepad application and has gradua
 ## Screenshots
 
 ### Main Editor
-<img src="screenshots/main-editor.png" width="600" alt="Main Editor">
+<img src="screenshots/main-editor.png" width="750" alt="Main Editor">
 
 ### Code Editor
-<img src="screenshots/code-editor.png" width="600" alt="Code Editor">
+<img src="screenshots/code-editor.png" width="750" alt="Code Editor">
 
 ### Themes
-<img src="screenshots/themes.png" width="300" alt="Themes">
-
-### Distraction Free Mode
-<img src="screenshots/distraction-free-mode.png" width="600" alt="Distraction Free Mode">
+<img src="screenshots/themes.png" width="350" alt="Themes">
 
 ### Font Editor
-<img src="screenshots/font-editor.png" width="600" alt="Font Editor">
+<img src="screenshots/font-editor.png" width="750" alt="Font Editor">
+
+### Distraction Free Mode
+<img src="screenshots/distraction-free-mode.png" width="750" alt="Distraction Free Mode">
+
+### Markdown Mode
+<img src="screenshots/markdown-mode1.png" width="750" alt="Markdown Mode">
+<img src="screenshots/markdown-mode2.png" width="750" alt="Markdown Mode">
+<img src="screenshots/markdown-mode3.png" width="750" alt="Markdown Mode">
 
 ## Tech Stack
 
 ### Core
-- Java 21
+- Java 22
 - Java Swing
 - Maven
 
@@ -38,6 +43,7 @@ This project started in late 2024 as a simple notepad application and has gradua
 - MigLayout
 - FlatLaf
 - RSyntaxTextArea
+- CommonMark
 
 ### Logging & Testing
 - SLF4J + Logback
@@ -58,6 +64,7 @@ This project started in late 2024 as a simple notepad application and has gradua
 - Status bar showing the current line and column, word and character count, encoding, EOL format, and zoom level.
   (The encoding and EOL are hardcoded for now but will allow for change in the future)
 - Custom file extension support (planned to evolve into a fully custom note format with metadata)
+- Markdown Mode
 
 ### Code Editor
 
