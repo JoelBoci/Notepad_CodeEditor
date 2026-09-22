@@ -20,6 +20,7 @@ public class StatusBar extends JPanel {
     private final JLabel mZoomLabel = new JLabel("Zoom: 100%");
     private final JLabel mEncLabel = new JLabel("UTF-8");
     private final JLabel mEolLabel = new JLabel("LF");
+    private final JLabel mSaveStatusLabel = new JLabel("Saved");
 
     @Getter(AccessLevel.NONE)
     private JTextComponent mEditor;
@@ -33,6 +34,7 @@ public class StatusBar extends JPanel {
         add(mCountLabel, "gapright 12");
         add(mEncLabel, "gapright 12");
         add(mEolLabel, "gapright 12");
+        add(mSaveStatusLabel, "gapright 12");
         add(mZoomLabel,  "alignx right");
     }
 
@@ -62,7 +64,8 @@ public class StatusBar extends JPanel {
     }
 
     private void updateAll() {
-        if (mEditor == null) return;
+        if (mEditor == null)
+            return;
 
         try {
             int caret = mEditor.getCaretPosition();
@@ -82,5 +85,21 @@ public class StatusBar extends JPanel {
 
         if (mEditor.getClientProperty("eol") instanceof String s2 && !s2.isBlank())
             mEolLabel.setText(s2);
+    }
+
+    public void setSaveStatus(String status) {
+        mSaveStatusLabel.setText(status);
+    }
+
+    public void showSaving() {
+        setSaveStatus("Saving...");
+    }
+
+    public void showSaved() {
+        setSaveStatus("Saved");
+    }
+
+    public void showUnsaved() {
+        setSaveStatus("Unsaved changes");
     }
 }

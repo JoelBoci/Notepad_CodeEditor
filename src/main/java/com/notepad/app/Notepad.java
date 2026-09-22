@@ -77,7 +77,7 @@ public class Notepad {
         JMenuBar menuBar = new JMenuBar();
 
         // Create menus
-        FileMenu fileMenu = new FileMenu(mFrame, mTextArea);
+        FileMenu fileMenu = new FileMenu(mFrame, mTextArea, mStatusBar);
         EditMenu editMenu = new EditMenu(mFrame, mTextArea);
         FormatMenu formatMenu = new FormatMenu(mTextArea);
         ViewMenu viewMenu = new ViewMenu(mTextArea, this::onZoomChanged);
