@@ -1,5 +1,6 @@
 package com.notepad.gui.menuItems;
 
+import com.notepad.app.StatusBar;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,13 +19,15 @@ public class FileMenuTest {
     private JFrame mFrame;
     private JTextArea mTextArea;
     private FileMenu mFileMenu;
+    private StatusBar mStatusBar;
 
     @BeforeEach
     void setUp() throws Exception {
         SwingUtilities.invokeAndWait(() -> {
             mFrame = new JFrame();
             mTextArea = new JTextArea();
-            mFileMenu = new FileMenu(mFrame, mTextArea);
+            mStatusBar = new StatusBar();
+            mFileMenu = new FileMenu(mFrame, mTextArea, mStatusBar);
 
             mFrame.add(mTextArea);
             mFrame.pack();
@@ -66,5 +69,15 @@ public class FileMenuTest {
 
         assertEquals("New Note", newMenu.getItem(0).getText());
         assertEquals("New Code Editor", newMenu.getItem(1).getText());
+    }
+
+    @Test
+    @DisplayName("Test 4: Should Show Unsaved Changes When Text Is Edited")
+    void test4_shouldShowUnsavedChangesWhenTextIsEdited() throws Exception {
+        SwingUtilities.invokeAndWait(() -> {
+            mTextArea.setText("Hello world");
+
+            assertEquals("Unsaved changes", mStatusBar.getMSaveStatusLabel().getText());
+        });
     }
 }
